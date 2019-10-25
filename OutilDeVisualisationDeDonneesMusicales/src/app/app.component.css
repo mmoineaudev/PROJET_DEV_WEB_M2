@@ -1,0 +1,27 @@
+#app-title {
+    color: white;
+    background-color: darkblue;
+    align-items: center;
+}
+#search-bar {
+    color: darkblue;
+    background-color: darkslategrey;
+    align-items: center;
+}
+#display-table {
+    color: black;
+    background-color: white;
+    align-items: center;
+}
+#display-details {
+    color: white;
+    background-color: black;
+    align-items: center;
+}
+h1{
+    margin: 0;
+}
+div{
+    display: inline-block;
+    width: 100%;
+}
