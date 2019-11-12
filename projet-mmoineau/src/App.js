@@ -1,10 +1,11 @@
 import React from 'react';
+import logo from './logo.svg';
 import './App.css';
-import './components/artists';
+import Artists from './components/artists';
 function App() {
   return (
     <div className="App">
-      <artists></artists>
+      <Artists></Artists>
     </div>
   );
 }
