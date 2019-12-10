@@ -7,37 +7,37 @@ class MainPage extends React.Component {
 
 	constructor() {
 	  super();
-	  this.state = { start: 0 }
-
+	  this.state = { 
+			start: 0 ,
+			artists: []
+		}
 	}
 
-	fetchArtists(){
+	async fetchArtists(){
 		const URL = "https://wasabi.i3s.unice.fr/api/v1/artist_all/"+this.state.start ;
-		var headers = new Headers();
-		var requestInfos = { method: 'GET',
+		const headers = new Headers();
+		const requestInfos = { method: 'GET',
 					headers: headers,
 					mode: 'cors',
 					cache: 'default' };
-		const result = fetch(URL,requestInfos).then((response) => {
-			if(response.ok){
-				return response.body ;
-			}else{
-				return response.statusText ;				
-			}
-		});
-		console.log(URL, result);
-		return result.then((e) => console.log(e)  );
+		const result = await fetch(URL,requestInfos);
+		const jsonRes = await result.json();
+		return jsonRes;
 	}
-
+	
+	componentWillMount() {
+		const artists = this.fetchArtists().then((e) => {
+			//this.setState({artists: });
+			console.log(e)
+		});
+	}
+	
 	render() {
-	const artists = this.fetchArtists();
-	console.log(artists);
-
 	return (
 	 <div>
 		<div>TITLE</div>
 		<div>SEARCHBAR</div>
-		<div><Artists /><Artists /><Artists /></div>
+		<div>{this.state.artists.}</div>
 		<div>TAGS</div>
 	  </div>
 	  );  
