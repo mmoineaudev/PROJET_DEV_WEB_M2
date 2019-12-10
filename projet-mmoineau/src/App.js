@@ -1,11 +1,12 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Artists from './components/artists';
+import MainPage from './components/mainPage';
+
 function App() {
   return (
     <div className="App">
-      <Artists></Artists>
+      <MainPage></MainPage>
     </div>
   );
 }
