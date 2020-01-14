@@ -21,37 +21,79 @@ class MainPage extends React.Component {
 					headers: headers,
 					mode: 'cors',
 					cache: 'default' }
+		this.props.somethingLoading = true
 		const result = await fetch(URL,requestInfos)
-		//console.log('fetchArtists ', result)
+		console.log('fetchArtists ', URL , result)
 		const jsonRes = await result.json()
-		//console.log('fetchArtists ', jsonRes)
+		console.log('fetchArtists ', jsonRes)
 		return jsonRes
 	}
-	
+
+	//https://wasabi.i3s.unice.fr/search/member/name/:memberName
+	async fetchArtistsByName(){
+		console.log('fetchArtistsByName')
+		const URL = "https://wasabi.i3s.unice.fr/search/member/name/"+this.state.searchbar 
+		const headers = new Headers()
+		const requestInfos = { method: 'GET',
+					headers: headers,
+					mode: 'cors',
+					cache: 'default' }
+		this.props.somethingLoading = true
+		const result = await fetch(URL,requestInfos)
+		//console.log('fetchArtistsByName ', result)
+		const jsonRes = await result.json()
+		console.log('fetchArtistsByName ', jsonRes)
+		return jsonRes
+	}
+	getAllArtist(){
+		console.log('this.getAllArtist')
+		this.fetchArtists().then(newArtist => {
+			this.setState({
+				artists: newArtist
+			})
+			this.props.somethingLoading = false;
+		})
+
+	}
+	getArtistFromSearch(){
+		console.log('this.getArtistFromSearch')
+		this.fetchArtistsByName().then(newArtist => {
+			this.setState({
+				artists: newArtist
+			})
+			this.props.somethingLoading = false;
+		})
+
+	}
 	componentWillMount() {
-		console.log('componentWillMount')
-		this.fetchArtists()
-			  .then(newArtist => { // data c'est le texte json de response ci-dessus
-				this.setState({
-					artists: newArtist
-			   })
-			  }).catch(err => {
-				console.log("erreur dans le get : " + err)
-			  }) 
+		let newArtist = [];
+		if(this.props.somethingLoading  || (this.state.artists && this.state.artists.length>0) ){
+			//ok
+		}else {
+			if(this.props.search && this.props.search.length>0){
+				newArtist = this.getArtistFromSearch();
+			}else{
+				newArtist = this.getAllArtist();
+			}
+			this.setState({
+				artists: newArtist
+			})	
+		}
+		console.log('componentWillMount', this.state, this.props)
 	}
 	
 	getFormattedArtistsFromState() {
 		console.log('getFormattedArtistsFromState')
-		let formattedArtist = []
-
-		if(this.state.artists.length>0) this.state.artists.forEach(element => {
-			//console.log(element)
-			formattedArtist.push(element.name)
-		})
-		if(formattedArtist.length>0) formattedArtist.forEach(element => {
-			element= <li> element </li>
-		})
-		return (formattedArtist)?<ul>{formattedArtist.join()}</ul>:<p>pas d'artiste...</p> 
+		if(this.state.artists){
+			const artists = this.state.artists;
+			const res = (this.state.artists.length>0)?
+			<ul>{artists.map((element) => 
+				<li key={element._id}>{'*' + element.name +' ; '+ element.type,element.genres}</li>
+			)}</ul> : <p> sadness, pas d'artistes </p>; 
+			console.log(res)
+			
+			return res
+		} return [];	
 	}
 
 	render() {
@@ -59,7 +101,12 @@ class MainPage extends React.Component {
 		return (
 	 	<div>
 			<div>TITLE</div>
-			<div>SEARCHBAR</div>
+			<div>
+				<form onSubmit={this.getArtistFromSearch()} >
+					<input type="text" 	ref={(search) => this.search = search} className="searchbar" placeholder="Search..." />
+					<button type="submit">Search</button>
+				</form>
+			</div>
 			<div>{artists}</div>
 			<div>TAGS</div>
 	  	</div>
