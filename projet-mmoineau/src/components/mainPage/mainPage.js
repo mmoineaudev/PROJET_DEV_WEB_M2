@@ -21,7 +21,6 @@ class MainPage extends React.Component {
 					headers: headers,
 					mode: 'cors',
 					cache: 'default' }
-		this.props.somethingLoading = true
 		const result = await fetch(URL,requestInfos)
 		console.log('fetchArtists ', URL , result)
 		const jsonRes = await result.json()
@@ -38,7 +37,6 @@ class MainPage extends React.Component {
 					headers: headers,
 					mode: 'cors',
 					cache: 'default' }
-		this.props.somethingLoading = true
 		const result = await fetch(URL,requestInfos)
 		//console.log('fetchArtistsByName ', result)
 		const jsonRes = await result.json()
@@ -51,7 +49,6 @@ class MainPage extends React.Component {
 			this.setState({
 				artists: newArtist
 			})
-			this.props.somethingLoading = false;
 		})
 
 	}
@@ -61,13 +58,13 @@ class MainPage extends React.Component {
 			this.setState({
 				artists: newArtist
 			})
-			this.props.somethingLoading = false;
 		})
 
 	}
 	componentWillMount() {
+		console.log('componentWillMount');
 		let newArtist = [];
-		if(this.props.somethingLoading  || (this.state.artists && this.state.artists.length>0) ){
+		if( (this.state.artists && this.state.artists.length>0) ){
 			//ok
 		}else {
 			if(this.props.search && this.props.search.length>0){
