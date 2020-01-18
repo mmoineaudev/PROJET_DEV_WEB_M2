@@ -15,12 +15,12 @@ DEBUG : constructor
 			search : 'An artist',
 			display: 'all', //'all', 'search'
 			artists: [],
-			htmlArtists: []
 		}
 	}
 	getAll(){
 		console.log('getAll')
 		this.setState({display:'all'})
+			
 	}
 	async fetchArtists(){
 		console.log(`#############################################################
@@ -39,7 +39,7 @@ DEBUG : fetchArtists
 DEBUG : `,jsonRes,`
 ############################################################`)
 		this.setState({
-			artists: Promise.resolve(jsonRes),
+			artists: jsonRes,
 			display: 'all'
 		})
 	}	
@@ -47,7 +47,7 @@ DEBUG : `,jsonRes,`
 	getSearch(){
 		console.log('getSearch : ', this.search.value)
 		this.setState({display:'search',
-						searche: this.search.value})
+						search: this.search.value})
 	}
 	//https://wasabi.i3s.unice.fr/search/member/name/:memberName
 	async fetchArtistsByName(){
@@ -64,9 +64,10 @@ DEBUG : fetchArtistsByName `, this.search.value, `
 		const jsonRes = await result.json()
 		console.log('fetchArtistsByName ', jsonRes)
 		this.setState({
-			artists: Promise.resolve(jsonRes),
+			artists: jsonRes,
 			display: 'search'
-		})
+		})	
+
 	}
 
 
@@ -74,38 +75,40 @@ DEBUG : fetchArtistsByName `, this.search.value, `
 		console.log(`#############################################################
 START : componentWillMount`, this.state, this.props, 
 `############################################################`)
-		let newArtists = []
-		switch (this.state.display) {
-			case 'all':
-				this.displayFactory(Promise.resolve(this.fetchArtists()))
-				break;
-			case 'search':
-				this.displayFactory(Promise.resolve(this.fetchArtistsByName()))
-				break;
-			default:
-				console.log('default display')
-				break;
-		}
+		
+		this.displayFactory()
+
 		console.log(`#############################################################
 END : componentWillMount`, this.state, this.props, 
 `############################################################`)
 	}
 
-	displayFactory(artists){
+	displayFactory(){
 		console.log(`#############################################################
 DEBUG : displayFactory
 ############################################################`)
-		const htmlArtists = [];
-		for(let i = 0; i<artists.length ; i++){
-			let artist = artists[i]
-			htmlArtists.push(<li>{artist._id} - {artist.name} </li>)
+		let artists
+		switch (this.state.display) {
+			case 'all':
+				artists = this.fetchArtists()
+				break;
+			case 'search':
+				artists = this.fetchArtistsByName()
+				break;
+			default:
+				break;
 		}
-		this.setState({htmlArtists: htmlArtists})
-		return (htmlArtists.length>0 )? htmlArtists : 'une liste d\'artistes'; 
+
 	}
 
 	render() {
-		const artists = this.state.artists
+		console.log('render :' , this.state)
+		let htmlArtists = '';
+		this.state.artists.forEach(artist => {
+			console.log(artist.name, artist._id)
+			htmlArtists.concat(`<li key=${artist._id} >${artist.name} </li>`)
+		});
+		console.log('render : htmlArtists :' , htmlArtists)
 		return (
 	 	<div>
 			<div>TITLE</div>
@@ -118,7 +121,10 @@ DEBUG : displayFactory
 					
 					<button onClick={() => this.getSearch() } > Search </button>
 			</div>
-			{this.state.htmlArtists}
+			{ this.state.artists.length }
+			<div>
+				wtf <ul>{ htmlArtists }</ul>
+			</div>
 			<div>TAGS</div>
 	  	</div>
 	  )  
