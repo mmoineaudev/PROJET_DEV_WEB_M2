@@ -1,8 +1,6 @@
-import React, { Component, Input } from 'react'
+import React, { Component } from 'react'
 
 import PropTypes from 'prop-types'
-import Artists from '../artists'
-import artists from '../artists'
 
 class MainPage extends React.Component {
 	constructor() {
@@ -73,21 +71,13 @@ DEBUG : fetchArtistsByName `, this.search.value, `
 	componentDidMount() {
 		console.log(`#############################################################
 START : componentWillMount`, this.state, this.props, 
-`############################################################`)
-	
-	if( this.state.artists.length>0 ) {
-		let htmlArtists = ''
-		this.state.artists.forEach(artist => {
-				console.log(artist.name, artist._id)
-				htmlArtists.concat(`<li key=${artist._id} >${artist.name} </li>`)
-			})
-		console.log('htmlArtists',htmlArtists)
-		this.setState({htmlArtists: htmlArtists})
-		}
+`############################################################`)	
+		if(this.state.artists.length==0) this.fetchArtists()
 	}
 
 	render() {
 		console.log('render :' , this.state)
+		const artists = this.state.artists;
 		if(!this.state.isLoaded) return <div>Loading...</div>
 		return (
 	 	<div>
@@ -103,7 +93,7 @@ START : componentWillMount`, this.state, this.props,
 			</div>
 			{ this.state.artists.length }
 			<div>
-				wtf <ul>{ this.state.htmlArtists }</ul>
+				wtf <ul>{ artists.map(el => <li key={el._id}> {el.name} </li>) 	}</ul>
 			</div>
 			<div>TAGS</div>
 	  	</div>
