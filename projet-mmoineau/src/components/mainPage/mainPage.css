@@ -1,49 +1,11 @@
-
-body{
-  margin: 3em;
-  display: block;
-}
-ol {
-  list-style: none;
-  counter-reset: my-awesome-counter;
-}
-li {
-  counter-increment: my-awesome-counter;
-  margin: 0.25rem;
-}
-li::before {
-  content: counter(my-awesome-counter);
-  background: #662974;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  display: inline-block;
-  line-height: 2rem;
-  color: white;
-  text-align: center;
-  margin-right: 0.5rem;
-}
-ol ol li::before {
-  background: #DE51FF;
-}
-ol ol ol li::before {
-  background: #EE9EFF;
-}
-
-body {
-  font-family: 'PT Serif', serif;
-}
-nav ol{
-    height:25em; width:18%;
-}
-nav ol{
-    overflow:hidden; overflow-y:scroll;
-}
-.list{
-  background-color: grey;
-}
 .debug{
   border: red;
   border-style: solid;
 }
 
+list nav{
+  height:25em; width:18%;
+}
+list nav{
+  overflow:hidden; overflow-y:scroll;
+}

@@ -1,10 +1,19 @@
-import React from 'react'
+import React from 'react' ; 
 import './mainPage.css';
-
+import TextField from '../graphicTools/TextField' ;
+import { List, ListItem } from '@material-ui/core';
+import { TableContainer } from '@material-ui/core'
 /**
  * wasabi.i3s.unice.fr/api/v1/artist/genres/popularity?limit=10
  */
 var debug = true;
+/**
+ * Styles
+ */
+
+
+  
+
 class MainPage extends React.Component {
 	constructor() {
 	  super()
@@ -89,13 +98,12 @@ class MainPage extends React.Component {
 
 	render() {
 		this.debug('render :' , this.state)
-		
+
 		return (
 	 	<div className="debug">
 			<div className="debug">FRONTEND WASABI</div>
 			<div className="debug">
-					<input type="text" 	ref={(search) => this.search = search} className="searchbar" placeholder="Search..." />
-					
+      				<TextField ref={(search) => this.search = search}/>
 					<button onClick={() => this.getAll()} > ALL </button>
 					<button onClick={() => this.getSearch() } > Search </button>
 					{this.displayArtists()}
@@ -128,11 +136,13 @@ class MainPage extends React.Component {
 		if(!this.state.isLoaded) return <div className="debug">Loading...</div>
 		else if(artists.length === 0 ) return <div className="noResultFound"> No result found ... </div>
 		else return (
-		<div className="resultsFound"> { artists.length } result found
-			<div className="list">
-				<nav><ol>{ artists.map(el => <li key={el._id}> {el.name} </li>)}</ol></nav>
-			</div>
-		</div>)
+		<TableContainer className="resultsFound" style={{maxHeight: "25em", overflow: 'auto'}}> 
+			<ListItem>{ artists.length } result found</ListItem>
+			<List>
+				{ artists.map(el => <ListItem align-items="center" button="true" key={el._id}> {el.name} </ListItem>)}
+			</List>
+		</TableContainer>
+		)
 	}
 
 	debug(label, message){
