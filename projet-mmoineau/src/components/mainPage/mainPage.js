@@ -12,14 +12,17 @@ DEBUG : constructor
 	  super()
 	  this.state = { 
 			start: 0 ,
+			isLoaded : false,
 			search : 'An artist',
-			display: 'all', //'all', 'search'
 			artists: [],
 		}
+		this.fetchArtists()
 	}
 	getAll(){
+		
 		console.log('getAll')
-		this.setState({display:'all'})
+		this.setState({isLoaded:false})
+		this.fetchArtists()
 			
 	}
 	async fetchArtists(){
@@ -32,22 +35,20 @@ DEBUG : fetchArtists
 					headers: headers,
 					mode: 'cors',
 					cache: 'default' }
-		const result = await fetch(URL,requestInfos)
-		const jsonRes = await result.json()
-		console.log(`#############################################################
-		DEBUG : fetchArtists
-DEBUG : `,jsonRes,`
-############################################################`)
-		this.setState({
-			artists: jsonRes,
-			display: 'all'
-		})
+		
+		fetch(URL,requestInfos).then(res => res.json()).then(jsonRes => {
+			
+			this.setState({isLoaded:true,artists: jsonRes})
+
+		}
+	).then(console.log('loaded'))
+
 	}	
 
 	getSearch(){
-		console.log('getSearch : ', this.search.value)
-		this.setState({display:'search',
-						search: this.search.value})
+		console.log('getSearch : ', this.search.value)	
+		this.setState({isLoaded:false})
+		this.fetchArtistsByName()
 	}
 	//https://wasabi.i3s.unice.fr/search/member/name/:memberName
 	async fetchArtistsByName(){
@@ -60,55 +61,34 @@ DEBUG : fetchArtistsByName `, this.search.value, `
 					headers: headers,
 					mode: 'cors',
 					cache: 'default' }
-		const result = await fetch(URL,requestInfos)
-		const jsonRes = await result.json()
-		console.log('fetchArtistsByName ', jsonRes)
-		this.setState({
-			artists: jsonRes,
-			display: 'search'
-		})	
+		(URL,requestInfos).
+		then(res => res.json()).
+		then(jsonRes => {
+				this.setState({isLoaded:true,artists: jsonRes })
 
+			}
+		).then(console.log('loaded'))
 	}
-
 
 	componentDidMount() {
 		console.log(`#############################################################
 START : componentWillMount`, this.state, this.props, 
 `############################################################`)
-		
-		this.displayFactory()
-
-		console.log(`#############################################################
-END : componentWillMount`, this.state, this.props, 
-`############################################################`)
-	}
-
-	displayFactory(){
-		console.log(`#############################################################
-DEBUG : displayFactory
-############################################################`)
-		let artists
-		switch (this.state.display) {
-			case 'all':
-				artists = this.fetchArtists()
-				break;
-			case 'search':
-				artists = this.fetchArtistsByName()
-				break;
-			default:
-				break;
+	
+	if( this.state.artists.length>0 ) {
+		let htmlArtists = ''
+		this.state.artists.forEach(artist => {
+				console.log(artist.name, artist._id)
+				htmlArtists.concat(`<li key=${artist._id} >${artist.name} </li>`)
+			})
+		console.log('htmlArtists',htmlArtists)
+		this.setState({htmlArtists: htmlArtists})
 		}
-
 	}
 
 	render() {
 		console.log('render :' , this.state)
-		let htmlArtists = '';
-		this.state.artists.forEach(artist => {
-			console.log(artist.name, artist._id)
-			htmlArtists.concat(`<li key=${artist._id} >${artist.name} </li>`)
-		});
-		console.log('render : htmlArtists :' , htmlArtists)
+		if(!this.state.isLoaded) return <div>Loading...</div>
 		return (
 	 	<div>
 			<div>TITLE</div>
@@ -123,7 +103,7 @@ DEBUG : displayFactory
 			</div>
 			{ this.state.artists.length }
 			<div>
-				wtf <ul>{ htmlArtists }</ul>
+				wtf <ul>{ this.state.htmlArtists }</ul>
 			</div>
 			<div>TAGS</div>
 	  	</div>
