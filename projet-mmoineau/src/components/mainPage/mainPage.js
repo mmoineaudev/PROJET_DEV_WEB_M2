@@ -1,7 +1,10 @@
 import React from 'react'
 import './mainPage.css';
 
-
+/**
+ * wasabi.i3s.unice.fr/api/v1/artist/genres/popularity?limit=10
+ */
+var debug = true;
 class MainPage extends React.Component {
 	constructor() {
 	  super()
@@ -14,6 +17,10 @@ class MainPage extends React.Component {
 		}
 		this.fetchArtists()
 	}
+
+	/**
+	 * Lance une nouvelle requete
+	 */
 	getAll(){
 		this.debug('getAll')
 		this.setState({isLoaded:false})
@@ -38,7 +45,9 @@ class MainPage extends React.Component {
 	).then(this.debug('fetchArtists','loaded'))
 
 	}	
-
+	/**
+	 * Lance une nouvelle requete
+	 */
 	getSearch(){
 		console.log('getSearch : ', this.search.value)	
 		this.setState({isLoaded:false})
@@ -60,6 +69,9 @@ class MainPage extends React.Component {
 		).then(this.debug('fetchArtistsByName','loaded'))
 	}
 
+	/**
+	 * Rappelle la derniere opération réalisée quand on change des parametres
+	 */
 	callLastOperation(){
 		this.setState({isLoaded:false})
 		this.debug('callLastOperation', this.state.lastOperation)
@@ -67,7 +79,9 @@ class MainPage extends React.Component {
 		else if(this.state.lastOperation==this.fetchArtistsByName) this.fetchArtistsByName()
 		else this.debug('no last operation')
 	}
-
+	/**
+	 * Appelle le fetch par defaut 
+	 */
 	componentDidMount() {
 		this.debug("componentWillMount", this.state)
 		if(this.state.artists.length===0) this.fetchArtists()
@@ -75,11 +89,11 @@ class MainPage extends React.Component {
 
 	render() {
 		this.debug('render :' , this.state)
-		if(!this.state.isLoaded) return <div class="debug">Loading...</div>
+		
 		return (
-	 	<div class="debug">
-			<div class="debug">FRONTEND WASABI</div>
-			<div class="debug">
+	 	<div className="debug">
+			<div className="debug">FRONTEND WASABI</div>
+			<div className="debug">
 					<input type="text" 	ref={(search) => this.search = search} className="searchbar" placeholder="Search..." />
 					
 					<button onClick={() => this.getAll()} > ALL </button>
@@ -88,7 +102,7 @@ class MainPage extends React.Component {
 					{this.displayPager()}
 			</div>
 			
-			<div class="debug">TAGS</div>
+			<div className="debug">TAGS</div>
 	  	</div>
 	  )  
 	}
@@ -111,7 +125,8 @@ class MainPage extends React.Component {
 	displayArtists(){	
 		const artists = this.state.artists;
 		this.debug('displayArtists', artists.length)
-		if(artists.length === 0 ) return <div className="noResultFound"> No result found ... </div>
+		if(!this.state.isLoaded) return <div className="debug">Loading...</div>
+		else if(artists.length === 0 ) return <div className="noResultFound"> No result found ... </div>
 		else return (
 		<div className="resultsFound"> { artists.length } result found
 			<div className="list">
@@ -121,10 +136,12 @@ class MainPage extends React.Component {
 	}
 
 	debug(label, message){
-		console.log(`#############################################################`)
-		console.log(label)
-		console.log(message)
-		console.log(`#############################################################`);
+		if(debug){
+			console.log(`#############################################################`)
+			console.log(label)
+			console.log(message)
+			console.log(`#############################################################`)
+		}
 	}
 }
 

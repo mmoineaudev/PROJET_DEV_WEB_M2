@@ -1,6 +1,7 @@
 
 body{
   margin: 3em;
+  display: block;
 }
 ol {
   list-style: none;
