@@ -1,17 +1,10 @@
 import React from 'react' ; 
 import './mainPage.css';
-import TextField from '../graphicTools/TextField' ;
-import { List, ListItem } from '@material-ui/core';
-import { TableContainer } from '@material-ui/core'
+import { List, ListItem, Button, TableContainer, Card, CardContent, Typography, Container } from '@material-ui/core';
 /**
  * wasabi.i3s.unice.fr/api/v1/artist/genres/popularity?limit=10
  */
 var debug = true;
-/**
- * Styles
- */
-
-
   
 
 class MainPage extends React.Component {
@@ -22,9 +15,12 @@ class MainPage extends React.Component {
 			isLoaded : false,
 			search : 'An artist',
 			artists: [],
-			lastOperation: ()=>{}
+			lastOperation: ()=>{},
+			memberWithTheMostBand: []
 		}
 		this.fetchArtists()
+		
+
 	}
 
 	/**
@@ -38,7 +34,6 @@ class MainPage extends React.Component {
 	}
 	async fetchArtists(){
 		this.debug("fetchArtists")
-		let oldArtists = this.state.artists
 		const URL = "https://wasabi.i3s.unice.fr/api/v1/artist_all/"+this.state.start 
 		const headers = new Headers()
 		const requestInfos = { method: 'GET',
@@ -59,15 +54,14 @@ class MainPage extends React.Component {
 	 */
 	getSearch(){
 		console.log('getSearch : ', this.search.value)	
-		this.setState({isLoaded:false})
+		this.setState({isLoaded:false, artists:[]})
 		this.fetchArtistsByName()
 	}
 	//https://wasabi.i3s.unice.fr/search/member/name/:memberName
 	async fetchArtistsByName(){
-		this.debug("fetchArtistsByName" , this.search.value)
+		this.debug("fetchArtistsByName : " , this.search.value)
 		const URL = "https://wasabi.i3s.unice.fr/search/member/name/"+this.search.value
 		const headers = new Headers()
-		let oldArtists = this.state.artists
 		const requestInfos = { method: 'GET',
 					headers: headers,
 					mode: 'cors',
@@ -78,14 +72,29 @@ class MainPage extends React.Component {
 		).then(this.debug('fetchArtistsByName','loaded'))
 	}
 
+	//wasabi.i3s.unice.fr/api/v1/artist/member/count/band
+	async fetchMemberWithTheMostBand(){
+		const URL = "wasabi.i3s.unice.fr/api/v1/artist/member/count/band?limit=2"
+		const headers = new Headers()
+		const requestInfos = { method: 'GET',
+					headers: headers,
+					mode: 'cors',
+					cache: 'default' }
+		fetch(URL,requestInfos).then(res => res.json()).then(jsonRes => {
+				this.debug('fetchMemberWithTheMostBand', jsonRes)
+				this.setState({memberWithTheMostBand: jsonRes})
+			}
+		).then(this.debug('fetchMemberWithTheMostBand loaded',this.state.memberWithTheMostBand))
+	}
+
 	/**
 	 * Rappelle la derniere opération réalisée quand on change des parametres
 	 */
 	callLastOperation(){
 		this.setState({isLoaded:false})
 		this.debug('callLastOperation', this.state.lastOperation)
-		if(this.state.lastOperation==this.fetchArtists) this.fetchArtists()
-		else if(this.state.lastOperation==this.fetchArtistsByName) this.fetchArtistsByName()
+		if(this.state.lastOperation===this.fetchArtists) this.fetchArtists()
+		else if(this.state.lastOperation===this.fetchArtistsByName) this.fetchArtistsByName()
 		else this.debug('no last operation')
 	}
 	/**
@@ -93,7 +102,8 @@ class MainPage extends React.Component {
 	 */
 	componentDidMount() {
 		this.debug("componentWillMount", this.state)
-		if(this.state.artists.length===0) this.fetchArtists()
+		//if(this.state.artists.length===0) this.fetchArtists()
+		//if(this.state.memberWithTheMostBand.length===0) this.fetchMemberWithTheMostBand()
 	}
 
 	render() {
@@ -103,31 +113,31 @@ class MainPage extends React.Component {
 	 	<div className="debug">
 			<div className="debug">FRONTEND WASABI</div>
 			<div className="debug">
-      				<TextField ref={(search) => this.search = search}/>
-					<button onClick={() => this.getAll()} > ALL </button>
-					<button onClick={() => this.getSearch() } > Search </button>
+					 <input type="text" ref={(search) => this.search = search} />
+					<Button id="searchButton" className="MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={() => this.getSearch() } > Search </Button>
+					<Button id="getAllButton" className="MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={() => this.getAll()} > ALL </Button>
+					
 					{this.displayArtists()}
 					{this.displayPager()}
+					{this.displayData()}
 			</div>
-			
-			<div className="debug">TAGS</div>
 	  	</div>
 	  )  
 	}
 	displayPager(){
 		const start = this.state.start 
 		return (<div className="pager">
-			<button className="pagerButton" onClick={()=>{
+			<Button className="pagerButton MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={()=>{
 				this.debug('pageDecrement')
 				if(start>0) this.setState({start:start-200})
 				this.callLastOperation()
-			}}>Previous</button>
+			}}>Previous</Button>
 			<label className="pagerButton">{start}</label>
-			<button className="pagerButton" onClick={()=>{
+			<Button className="pagerButton MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={()=>{
 				this.debug('pageIncrement')
 				this.setState({start:start+200})
 				this.callLastOperation()
-			}}>Next</button>
+			}}>Next</Button>
 		</div>)
 	}
 	displayArtists(){	
@@ -136,15 +146,46 @@ class MainPage extends React.Component {
 		if(!this.state.isLoaded) return <div className="debug">Loading...</div>
 		else if(artists.length === 0 ) return <div className="noResultFound"> No result found ... </div>
 		else return (
-		<TableContainer className="resultsFound" style={{maxHeight: "25em", overflow: 'auto'}}> 
+		<TableContainer className="resultsFound debug" style={{maxHeight: "25em", overflow: 'auto', display:"auto"}}> 
 			<ListItem>{ artists.length } result found</ListItem>
 			<List>
-				{ artists.map(el => <ListItem align-items="center" button="true" key={el._id}> {el.name} </ListItem>)}
+				{ artists.map(el => <ListItem align-items="center" Button="true" key={el._id}> {el.name} </ListItem>)}
 			</List>
 		</TableContainer>
 		)
 	}
-
+	/**
+	* Affiche des statistiques en provenance de l'API 
+	*/
+	displayData(){
+		this.debug('displayData')
+		if(this.state.memberWithTheMostBand.length===0) {
+			return (<label>Loading...</label>) ;
+		}else if(this.state.memberWithTheMostBand.length>0){
+			const result = this.state.memberWithTheMostBand[0]
+			const title = result.membername
+			const message1 = result.sum
+			const message2 = 'Participation au plus grand nombre de groupes'
+			this.debug('displayData', {title, message1,message2})
+			return (<Container>{this.createCard(title, message1, message2)}</Container>)
+		}
+	}
+	createCard(title, message1, message2){
+		return(
+		<Card display='block'>
+			<CardContent>
+			<Typography color="textPrimary" gutterBottom>
+				{title}
+			</Typography>
+			<Typography variant="h2" component="h2">
+				{message1}
+			</Typography>
+			<Typography color="textSecondary">
+				{message2}
+			</Typography>
+			</CardContent>
+		</Card>)
+	}
 	debug(label, message){
 		if(debug){
 			console.log(`#############################################################`)
