@@ -8,7 +8,7 @@ https://wasabi.i3s.unice.fr/apidoc/
 
 * Framework :
 
-Angular 
+React 
 
 * Lien vers le sujet :
 
