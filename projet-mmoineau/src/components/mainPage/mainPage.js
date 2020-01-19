@@ -1,10 +1,7 @@
-import React, { PureComponent } from 'react' ; 
+import React from 'react' ; 
 import './mainPage.css';
 import { List, ListItem, Button, TableContainer, Card, CardContent, Typography, Container } from '@material-ui/core';
-/**
- * wasabi.i3s.unice.fr/api/v1/artist/genres/popularity?limit=10
- */
-//var debug = false;
+
   
 
 class MainPage extends React.Component {
@@ -14,9 +11,11 @@ class MainPage extends React.Component {
 			start: 0 ,
 			listIsLoaded : false,
 			dataIsLoaded : false,
+			popularityIsLoaded : false,
 			search : 'An artist',
 			artists: [],
 			memberWithTheMostBand: [],
+			popularities: [],
 			lastOperation: ()=>{}
 		}		
 		this.getAll()
@@ -31,6 +30,7 @@ class MainPage extends React.Component {
 		this.setState({listIsLoaded:false, dataIsLoaded:false})
 		this.fetchArtists()
 		this.fetchMemberWithTheMostBand()
+		this.fetchPopularity()
 			
 	}
 	async fetchArtists(){
@@ -56,7 +56,7 @@ class MainPage extends React.Component {
 	 */
 	getSearch(){
 		const debug = false
-		console.log('getSearch : ', this.search.value)	
+		this.debug(debug, 'getSearch : ', this.search.value)	
 		this.setState({listIsLoaded:false, artists:[]})
 		this.fetchArtistsByName()
 	}
@@ -76,10 +76,22 @@ class MainPage extends React.Component {
 			}
 		).then(this.debug(debug, 'fetchArtistsByName','loaded'))
 	}
-
+	
+	async fetchPopularity(){
+		const debug = true
+		const URL = "https://wasabi.i3s.unice.fr/api/v1/artist/genres/popularity?limit=3"
+		const headers = new Headers()
+		const requestInfos = { method: 'GET',
+					headers: headers,
+					mode: 'cors',
+					cache: 'default' }
+		let response = await fetch(URL, requestInfos).then(res => {this.debug(debug, 'fetchPopularity', res) ; return res })
+		let body = await response.json().then(res => {this.debug(debug, 'fetchPopularity', res) ; return res })
+		this.setState({popularityIsLoaded: true, popularities:body  })
+	}
 	//wasabi.i3s.unice.fr/api/v1/artist/member/count/band
 	async fetchMemberWithTheMostBand(){
-		const debug = true
+		const debug = false
 		const URL = "https://wasabi.i3s.unice.fr/api/v1/artist/member/count/band?limit=2"
 		const headers = new Headers()
 		const requestInfos = { method: 'GET',
@@ -88,6 +100,7 @@ class MainPage extends React.Component {
 					cache: 'default' }
 		let response = await fetch(URL, requestInfos).then(res => {this.debug(debug, 'fetchMemberWithTheMostBand', res) ; return res })
 		let body = await response.json().then(res => {this.debug(debug, 'fetchMemberWithTheMostBand', res) ; return res })
+		
 		this.setState({dataIsLoaded:true, memberWithTheMostBand:body[0]})
 	}
 
@@ -149,7 +162,7 @@ class MainPage extends React.Component {
 		</div>)
 	}
 	displayArtists(){	
-		const debug = false
+		//const debug = false
 		const artists = this.state.artists;
 		//this.debug(debug, 'displayArtists', artists.length)
 		if(!this.state.listIsLoaded) return <div className="debug">Loading...</div>
@@ -169,22 +182,37 @@ class MainPage extends React.Component {
 	displayData(){
 		const debug=true
 		this.debug(debug, this.state.dataIsLoaded, this.state.memberWithTheMostBand)
+		let card1 = ''
+		let card2 = ''
 		if(!this.state.dataIsLoaded) {
-			return (<label>Loading...</label>) ;
+			 card1 = (<label>Loading...</label>) ;
 		}else if(this.state.memberWithTheMostBand){
 			const result = this.state.memberWithTheMostBand
 			const title = result.membername
 			const message1 = result.sum
 			const message2 = 'Participation au plus grand nombre de groupes'
 			this.debug(debug, 'displayData', {title, message1,message2})
-			return (<Container>{this.createCard(title, message1, message2)}</Container>)
+			card1 = this.createCard(title, message1, message2)
 		}
+
+		if(!this.state.popularityIsLoaded) {
+			card2 = (<label>Loading...</label>) ;
+		}else if(this.state.popularities){
+			const result = this.state.popularities[0]
+			const genre = result._id
+			const count = result.sum
+			this.debug(debug, 'displayPopularities', {count, genre})
+			card2 = this.createCard(genre, count, "Genre le plus populaire")
+		}
+			return (<Container className="MuiContainer-root MuiContainer-maxWidthXs">
+				{card1}
+				{card2}
+			</Container>)
+		
 	}
 	createCard(title, message1, message2){
-		const debug = false
-
 		return(
-		<Card display='block'>
+		<Card className="debug" display='block'>
 			<CardContent>
 			<Typography color="textPrimary" gutterBottom>
 				{title}
