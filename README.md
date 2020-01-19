@@ -1,4 +1,4 @@
-Date de rendu : 10/12
+Date de rendu : ??/12
 
 # PROJET_DEV_WEB_M2 - Maxime MOINEAU
 
@@ -16,5 +16,6 @@ https://docs.google.com/document/d/1O7BVx_qZHiz_tB0ecFBugmr7h5UySMGxMahr3z2e94c/
 
 # Start
 
-ng serve --open
+npm install 
+npm start
 
