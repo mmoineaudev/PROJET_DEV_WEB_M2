@@ -62,23 +62,23 @@ class MainPage extends React.Component {
 	}
 	//https://wasabi.i3s.unice.fr/search/member/name/:memberName
 	async fetchArtistsByName(){
-		const debug = false
+		const debug = true
 		this.debug(debug, "fetchArtistsByName : " , this.search.value)
-		const URL = "https://wasabi.i3s.unice.fr/search/member/name/"+this.search.value
+		const URL = "https://wasabi.i3s.unice.fr/api/v1/artist_all/name/"+this.search.value
 		const headers = new Headers()
 		const requestInfos = { method: 'GET',
 					headers: headers,
 					mode: 'cors',
 					cache: 'default' }
 		fetch(URL,requestInfos).then(res => res.json()).then(jsonRes => {
-				this.debug(debug, 'fetchMemberWithTheMostBand', jsonRes)
+				this.debug(debug, 'fetchArtistsByName', jsonRes)
 				this.setState({listIsLoaded:true,artists: jsonRes, lastOperation:this.fetchArtistsByName})
 			}
 		).then(this.debug(debug, 'fetchArtistsByName','loaded'))
 	}
 	
 	async fetchPopularity(){
-		const debug = true
+		const debug = false
 		const URL = "https://wasabi.i3s.unice.fr/api/v1/artist/genres/popularity?limit=3"
 		const headers = new Headers()
 		const requestInfos = { method: 'GET',
@@ -131,7 +131,7 @@ class MainPage extends React.Component {
 		this.debug(debug, 'render :' , this.state)
 		return (
 	 	<div className="debug">
-			<div className="debug">FRONTEND WASABI</div>
+			<div maxheight="5em" className="App-header">FRONTEND WASABI</div>
 			<div className="debug">
 					 <input type="text" ref={(search) => this.search = search} />
 					<Button id="searchButton" className="MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={() => this.getSearch() } > Search </Button>
@@ -169,9 +169,8 @@ class MainPage extends React.Component {
 		else if(artists.length === 0 ) return <div className="noResultFound"> No result found ... </div>
 		else return (
 		<TableContainer className="resultsFound debug" style={{maxHeight: "25em", overflow: 'auto', display:"auto"}}> 
-			<ListItem>{ artists.length } result found</ListItem>
 			<List>
-				{ artists.map(el => <ListItem align-items="center" button='true' key={el._id}> {el.name} </ListItem>)}
+				{ artists.map(el => <ListItem align-items="center" button="true" key={el._id}> {el.name} </ListItem>)}
 			</List>
 		</TableContainer>
 		)
@@ -180,7 +179,7 @@ class MainPage extends React.Component {
 	* Affiche des statistiques en provenance de l'API 
 	*/
 	displayData(){
-		const debug=true
+		const debug=false
 		this.debug(debug, this.state.dataIsLoaded, this.state.memberWithTheMostBand)
 		let card1 = ''
 		let card2 = ''
@@ -205,8 +204,7 @@ class MainPage extends React.Component {
 			card2 = this.createCard(genre, count, "Genre le plus populaire")
 		}
 			return (<Container className="MuiContainer-root MuiContainer-maxWidthXs">
-				{card1}
-				{card2}
+				<div width="100%">{card1} {card2}</div>
 			</Container>)
 		
 	}
