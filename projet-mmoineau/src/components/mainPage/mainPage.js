@@ -147,17 +147,17 @@ class MainPage extends React.Component {
 		this.debug(debug, 'render :' , this.state)
 		
 		return (
-	 	<div className="debug">
-			<div maxheight="5em" className="App-header">FRONTEND WASABI</div>
-			<div className="debug">
+	 	<div>
+			<div maxheight="10em" className="App-header">FRONTEND WASABI</div>
+			<div className="style1">
 					 <input type="text" ref={(search) => this.search = search} />
-					<Button id="searchButton" className="MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={() => this.getSearch() } > Search </Button>
-					<Button id="getAllButton" className="MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={() => this.getAll()} > SEARCH ALL SONGS </Button>
+					<Button padding="3em 3em" id="searchButton" className="MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={() => this.getSearch() } > Search </Button>
+					<Button padding="3em 3em" id="getAllButton" className="MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={() => this.getAll()} > SEARCH ALL SONGS </Button>
 					{this.displayArtists()}
 					{this.displayPager()}
 					{this.displayData()}
 			</div>
-			<div className="debug">
+			<div>
 
 				{this.displayGraphs()}
 
@@ -204,7 +204,7 @@ class MainPage extends React.Component {
 	displayPager(){
 		const debug=false
 		const start = this.state.start 
-		return (<div className="pager">
+		return (<div className="pager style4">
 			<Button className="pagerButton MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={()=>{
 				this.debug(debug, 'pageDecrement')
 				if(start>0) this.setState({start:start-200})
@@ -221,10 +221,10 @@ class MainPage extends React.Component {
 	displayArtists(){	
 		const debug=false
 		const artists = this.state.artists;
-		if(!this.state.listIsLoaded) return <div className="debug">Loading...</div>
+		if(!this.state.listIsLoaded) return <div>Loading...</div>
 		else if(!artists || artists.length < 1 ) return <div className="noResultFound"> No result found ... </div>
 		else return (
-		<TableContainer className="resultsFound debug" style={{maxHeight: "25em", overflow: 'auto', display:"auto"}}> 
+		<TableContainer className="resultsFound style4" style={{maxHeight: "25em", overflow: 'auto', display:"auto"}}> 
 			<List>
 				{ artists.map(el => <ListItem align-items="center" button="true" key={el._id}> {el.name} </ListItem>)}
 			</List>
@@ -272,18 +272,22 @@ class MainPage extends React.Component {
 		   this.debug(debug, 'displayData', {title, message1,message2})
 		   card3 = this.createCard(title, message1, message2)
 	   }
-			return (<Container className="MuiContainer-root MuiContainer-maxWidthXs">
-				<div width="100%">
+			return (<Container className="MuiContainer-root MuiContainer-maxWidthLg style2">
+				<div width="100%" className="style4">
 					{card1} 
+					</div>
+				<div width="100%" className="style2">
 					{card2} 
+					</div>
+				<div width="100%" className="style4">
 					{card3}
-				</div>
+					</div>
 			</Container>)
 		
 	}
 	createCard(title, message1, message2){
 		return(
-		<Card className="debug" display='block'>
+		<Card display='block'>
 			<CardContent>
 			<Typography color="textPrimary" gutterBottom>
 				{title}
