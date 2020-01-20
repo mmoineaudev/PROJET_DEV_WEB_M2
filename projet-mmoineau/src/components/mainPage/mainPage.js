@@ -18,7 +18,7 @@ class MainPage extends React.Component {
 			popularities: [],
 			lastOperation: ()=>{}
 		}		
-		this.getAll()
+		
 	}
 
 	/**
@@ -45,7 +45,7 @@ class MainPage extends React.Component {
 		
 		fetch(URL,requestInfos).then(res => res.json()).then(jsonRes => {
 			
-			this.setState({listIsLoaded:true,artists: jsonRes, lastOperation:this.fetchArtists})
+			this.setState({listIsLoaded:true, artists: jsonRes, lastOperation:this.fetchArtists})
 
 		}
 	).then(this.debug(debug, 'fetchArtists','loaded'))
@@ -55,7 +55,7 @@ class MainPage extends React.Component {
 	 * Lance une nouvelle requete
 	 */
 	getSearch(){
-		const debug = false
+		const debug = true
 		this.debug(debug, 'getSearch : ', this.search.value)	
 		this.setState({listIsLoaded:false, artists:[]})
 		this.fetchArtistsByName()
@@ -64,17 +64,18 @@ class MainPage extends React.Component {
 	async fetchArtistsByName(){
 		const debug = true
 		this.debug(debug, "fetchArtistsByName : " , this.search.value)
-		const URL = "https://wasabi.i3s.unice.fr/api/v1/artist_all/name/"+this.search.value
+		const URL = "https://wasabi.i3s.unice.fr/api/v1/artist/name/"+this.search.value
 		const headers = new Headers()
 		const requestInfos = { method: 'GET',
 					headers: headers,
 					mode: 'cors',
 					cache: 'default' }
-		fetch(URL,requestInfos).then(res => res.json()).then(jsonRes => {
-				this.debug(debug, 'fetchArtistsByName', jsonRes)
-				this.setState({listIsLoaded:true,artists: jsonRes, lastOperation:this.fetchArtistsByName})
-			}
-		).then(this.debug(debug, 'fetchArtistsByName','loaded'))
+			
+		let response = await fetch(URL, requestInfos).then(res => {this.debug(debug, 'fetchArtistsByName', res) ; return res })
+		let body = await response.json().then(res => {this.debug(debug, 'fetchArtistsByName', res) ; return res })
+		if(body) this.setState({listIsLoaded: true, artists: Array(body)  })
+		else this.setState({listIsLoaded: true})
+
 	}
 	
 	async fetchPopularity(){
@@ -120,10 +121,9 @@ class MainPage extends React.Component {
 	 */
 	componentDidMount() {
 		const debug=true
-
+		this.getAll()
 		this.debug(debug, "componentWillMount", this.state)
-		//if(this.state.artists.length===0) this.fetchArtists()
-		//if(this.state.memberWithTheMostBand.length<1) this.fetchMemberWithTheMostBand()
+		
 	}
 
 	render() {
@@ -135,8 +135,7 @@ class MainPage extends React.Component {
 			<div className="debug">
 					 <input type="text" ref={(search) => this.search = search} />
 					<Button id="searchButton" className="MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={() => this.getSearch() } > Search </Button>
-					<Button id="getAllButton" className="MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={() => this.getAll()} > ALL </Button>
-					
+					<Button id="getAllButton" className="MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={() => this.getAll()} > SEARCH ALL SONGS </Button>
 					{this.displayArtists()}
 					{this.displayPager()}
 					{this.displayData()}
@@ -162,11 +161,10 @@ class MainPage extends React.Component {
 		</div>)
 	}
 	displayArtists(){	
-		//const debug = false
+		const debug = true
 		const artists = this.state.artists;
-		//this.debug(debug, 'displayArtists', artists.length)
 		if(!this.state.listIsLoaded) return <div className="debug">Loading...</div>
-		else if(artists.length === 0 ) return <div className="noResultFound"> No result found ... </div>
+		else if(!artists || artists.length < 1 ) return <div className="noResultFound"> No result found ... </div>
 		else return (
 		<TableContainer className="resultsFound debug" style={{maxHeight: "25em", overflow: 'auto', display:"auto"}}> 
 			<List>
