@@ -207,7 +207,7 @@ class MainPage extends React.Component {
 		return (<div className="pager style4">
 			<Button className="pagerButton MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={()=>{
 				this.debug(debug, 'pageDecrement')
-				if(start>0) this.setState({start:start-200})
+				if(start-200>0) this.setState({start:start-199})
 				this.callLastOperation()
 			}}>Previous</Button>
 			<label className="pagerButton">{start}</label>
@@ -219,23 +219,31 @@ class MainPage extends React.Component {
 		</div>)
 	}
 	displayArtists(){	
-		const debug=false
+		const debug=true
 		const artists = this.state.artists;
+		let items = []
 		if(!this.state.listIsLoaded) return <div>Loading...</div>
+		
 		else if(!artists || artists.length < 1 ) return <div className="noResultFound"> No result found ... </div>
-		else return (
-		<TableContainer className="resultsFound style4" style={{maxHeight: "25em", overflow: 'auto', display:"auto"}}> 
-			<List>
-				{ artists.map(el => <ListItem align-items="center" button="true" key={el._id}> {el.name} </ListItem>)}
-			</List>
-		</TableContainer>
-		)
+		else {
+			 items = artists.map(el => { let genre = el.genre&&el.genre.length>0?el.genre[0]: null ;
+			 return <ListItem align-items="center" button="true" key={el._id}> {el.name} {genre} </ListItem>})
+			 this.debug(debug, "displayArtists", artists)
+			 return (
+			<TableContainer className="resultsFound style4" style={{maxHeight: "25em", overflow: 'auto', display:"auto"}}> 
+				<List>
+					{items}
+				</List>
+			</TableContainer>
+			)
+		}
 	}
+	
 	/**
 	* Affiche des statistiques en provenance de l'API 
 	*/
 	displayData(){
-		const debug=true
+		const debug=false
 		this.debug(debug, this.state.dataIsLoaded, this.state.memberWithTheMostBand)
 		let card1 = ''
 		let card2 = ''
