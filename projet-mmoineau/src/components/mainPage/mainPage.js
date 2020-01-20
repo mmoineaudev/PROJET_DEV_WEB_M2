@@ -1,6 +1,7 @@
 import React from 'react' ; 
 import './mainPage.css';
 import { List, ListItem, Button, TableContainer, Card, CardContent, Typography, Container } from '@material-ui/core';
+import MyLineGraph from '../myLineGraph';
 
   
 
@@ -17,7 +18,7 @@ class MainPage extends React.Component {
 			memberWithTheMostBand: [],
 			popularities: [],
 			mostAlbumsIsLoaded:false, 
-			memberWithTheMostAlbums:[],
+			memberWithTheMostAlbums: [],
 			lastOperation: ()=>{}
 		}		
 		
@@ -96,7 +97,7 @@ class MainPage extends React.Component {
 	//wasabi.i3s.unice.fr/api/v1/artist/member/count/band
 	async fetchMemberWithTheMostBand(){
 		const debug = false
-		const URL = "https://wasabi.i3s.unice.fr/api/v1/artist/member/count/band?limit=2"
+		const URL = "https://wasabi.i3s.unice.fr/api/v1/artist/member/count/band?limit=10"
 		const headers = new Headers()
 		const requestInfos = { method: 'GET',
 					headers: headers,
@@ -145,6 +146,7 @@ class MainPage extends React.Component {
 	render() {
 		const debug = false
 		this.debug(debug, 'render :' , this.state)
+		
 		return (
 	 	<div className="debug">
 			<div maxheight="5em" className="App-header">FRONTEND WASABI</div>
@@ -156,9 +158,26 @@ class MainPage extends React.Component {
 					{this.displayPager()}
 					{this.displayData()}
 			</div>
+			<div className="debug">
+
+				{this.displayGraphs()}
+
+			</div>
 	  	</div>
 	  )  
 	}
+
+	displayGraphs(){
+		const debug = true
+		
+		const labels1 = this.state.popularities.map((genre) => genre._id)
+		const values1 = this.state.popularities.map((genre) => genre.sum)
+		const graph1 = this.createGraphLine(labels1, values1, 'genres populaires')
+
+		this.debug(debug, 'displayGraphs :' , { labels1, values1, graph1})
+
+	}
+
 	displayPager(){
 		const debug = false
 		const start = this.state.start 
@@ -198,14 +217,15 @@ class MainPage extends React.Component {
 		let card1 = ''
 		let card2 = ''
 		let card3 = ''
+		
 		if(!this.state.dataIsLoaded) {
 			 card1 = (<label>Loading...</label>) ;
-		}else if(this.state.memberWithTheMostBand){
+		}else if(this.state.memberWithTheMostBand && this.state.memberWithTheMostBand.length>0){
 			const result = this.state.memberWithTheMostBand
 			const title = result.membername
 			const message1 = result.sum
 			const message2 = 'Participation au plus grand nombre de groupes'
-			this.debug(debug, 'displayData', {title, message1,message2})
+			this.debug(debug, 'displayData', {title, message1,message2 })
 			card1 = this.createCard(title, message1, message2)
 		}
 
@@ -230,7 +250,11 @@ class MainPage extends React.Component {
 		   card3 = this.createCard(title, message1, message2)
 	   }
 			return (<Container className="MuiContainer-root MuiContainer-maxWidthXs">
-				<div width="100%">{card1} {card2} {card3}</div>
+				<div width="100%">
+					{card1} 
+					{card2} 
+					{card3}
+				</div>
 			</Container>)
 		
 	}
@@ -255,6 +279,9 @@ class MainPage extends React.Component {
 			console.log('#DEBUG#', label)
 			console.log(message)
 		}
+	}
+	createGraphLine(dataArray, labelsArray, label){
+		return <MyLineGraph labels={labelsArray} data={dataArray} label={label}></MyLineGraph>
 	}
 }
 
