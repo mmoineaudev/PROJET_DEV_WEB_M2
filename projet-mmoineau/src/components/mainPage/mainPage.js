@@ -16,6 +16,8 @@ class MainPage extends React.Component {
 			artists: [],
 			memberWithTheMostBand: [],
 			popularities: [],
+			mostAlbumsIsLoaded:false, 
+			memberWithTheMostAlbums:[],
 			lastOperation: ()=>{}
 		}		
 		
@@ -27,10 +29,11 @@ class MainPage extends React.Component {
 	getAll(){
 		const debug = false
 		this.debug(debug, 'getAll')
-		this.setState({listIsLoaded:false, dataIsLoaded:false})
+		this.setState({listIsLoaded:false, dataIsLoaded:false, fetchArtistWithTheMostAlbums:false})
 		this.fetchArtists()
 		this.fetchMemberWithTheMostBand()
 		this.fetchPopularity()
+		this.fetchArtistWithTheMostAlbums()
 			
 	}
 	async fetchArtists(){
@@ -104,7 +107,20 @@ class MainPage extends React.Component {
 		
 		this.setState({dataIsLoaded:true, memberWithTheMostBand:body[0]})
 	}
-
+	//https://wasabi.i3s.unice.fr/api/v1/artist/count/album
+	async fetchArtistWithTheMostAlbums(){
+		const debug = false
+		const URL = "https://wasabi.i3s.unice.fr/api/v1/artist/count/album?limit=2"
+		const headers = new Headers()
+		const requestInfos = { method: 'GET',
+					headers: headers,
+					mode: 'cors',
+					cache: 'default' }
+		let response = await fetch(URL, requestInfos).then(res => {this.debug(debug, 'fetchArtistWithTheMostAlbums', res) ; return res })
+		let body = await response.json().then(res => {this.debug(debug, 'fetchArtistWithTheMostAlbums', res) ; return res })
+		
+		this.setState({mostAlbumsIsLoaded:true, memberWithTheMostAlbums:body[0]})
+	}
 	/**
 	 * Rappelle la derniere opération réalisée quand on change des parametres
 	 */
@@ -161,7 +177,7 @@ class MainPage extends React.Component {
 		</div>)
 	}
 	displayArtists(){	
-		const debug = true
+		const debug = false
 		const artists = this.state.artists;
 		if(!this.state.listIsLoaded) return <div className="debug">Loading...</div>
 		else if(!artists || artists.length < 1 ) return <div className="noResultFound"> No result found ... </div>
@@ -181,6 +197,7 @@ class MainPage extends React.Component {
 		this.debug(debug, this.state.dataIsLoaded, this.state.memberWithTheMostBand)
 		let card1 = ''
 		let card2 = ''
+		let card3 = ''
 		if(!this.state.dataIsLoaded) {
 			 card1 = (<label>Loading...</label>) ;
 		}else if(this.state.memberWithTheMostBand){
@@ -201,8 +218,19 @@ class MainPage extends React.Component {
 			this.debug(debug, 'displayPopularities', {count, genre})
 			card2 = this.createCard(genre, count, "Genre le plus populaire")
 		}
+
+		if(!this.state.mostAlbumsIsLoaded) {
+			card3 = (<label>Loading...</label>) ;
+	   	}else if(this.state.memberWithTheMostAlbums){
+		   const result = this.state.memberWithTheMostAlbums
+		   const title = result.name
+		   const message1 = result.sum
+		   const message2 = 'Artiste ayant le plus d\'albums'
+		   this.debug(debug, 'displayData', {title, message1,message2})
+		   card3 = this.createCard(title, message1, message2)
+	   }
 			return (<Container className="MuiContainer-root MuiContainer-maxWidthXs">
-				<div width="100%">{card1} {card2}</div>
+				<div width="100%">{card1} {card2} {card3}</div>
 			</Container>)
 		
 	}
