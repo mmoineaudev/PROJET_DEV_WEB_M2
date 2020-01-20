@@ -9,7 +9,7 @@ class MainPage extends React.Component {
 	constructor() {
 	  super()
 	  this.state = { 
-			start: 0 ,
+			start: 1,
 			listIsLoaded : false,
 			dataIsLoaded : false,
 			popularityIsLoaded : false,
@@ -28,7 +28,7 @@ class MainPage extends React.Component {
 	 * Lance une nouvelle requete
 	 */
 	getAll(){
-		const debug = false
+		const debug=false
 		this.debug(debug, 'getAll')
 		this.setState({listIsLoaded:false, dataIsLoaded:false, fetchArtistWithTheMostAlbums:false})
 		this.fetchArtists()
@@ -38,7 +38,7 @@ class MainPage extends React.Component {
 			
 	}
 	async fetchArtists(){
-		const debug = false
+		const debug=false
 		this.debug(debug, "fetchArtists")
 		const URL = "https://wasabi.i3s.unice.fr/api/v1/artist_all/"+this.state.start 
 		const headers = new Headers()
@@ -59,14 +59,14 @@ class MainPage extends React.Component {
 	 * Lance une nouvelle requete
 	 */
 	getSearch(){
-		const debug = true
+		const debug=false
 		this.debug(debug, 'getSearch : ', this.search.value)	
 		this.setState({listIsLoaded:false, artists:[]})
 		this.fetchArtistsByName()
 	}
 	//https://wasabi.i3s.unice.fr/search/member/name/:memberName
 	async fetchArtistsByName(){
-		const debug = true
+		const debug=false
 		this.debug(debug, "fetchArtistsByName : " , this.search.value)
 		const URL = "https://wasabi.i3s.unice.fr/api/v1/artist/name/"+this.search.value
 		const headers = new Headers()
@@ -83,7 +83,7 @@ class MainPage extends React.Component {
 	}
 	
 	async fetchPopularity(){
-		const debug = false
+		const debug=false
 		const URL = "https://wasabi.i3s.unice.fr/api/v1/artist/genres/popularity?limit=3"
 		const headers = new Headers()
 		const requestInfos = { method: 'GET',
@@ -96,7 +96,7 @@ class MainPage extends React.Component {
 	}
 	//wasabi.i3s.unice.fr/api/v1/artist/member/count/band
 	async fetchMemberWithTheMostBand(){
-		const debug = false
+		const debug=false
 		const URL = "https://wasabi.i3s.unice.fr/api/v1/artist/member/count/band?limit=10"
 		const headers = new Headers()
 		const requestInfos = { method: 'GET',
@@ -105,12 +105,11 @@ class MainPage extends React.Component {
 					cache: 'default' }
 		let response = await fetch(URL, requestInfos).then(res => {this.debug(debug, 'fetchMemberWithTheMostBand', res) ; return res })
 		let body = await response.json().then(res => {this.debug(debug, 'fetchMemberWithTheMostBand', res) ; return res })
-		
-		this.setState({dataIsLoaded:true, memberWithTheMostBand:body[0]})
+		this.setState({dataIsLoaded:true, memberWithTheMostBand:body})
 	}
 	//https://wasabi.i3s.unice.fr/api/v1/artist/count/album
 	async fetchArtistWithTheMostAlbums(){
-		const debug = false
+		const debug=false
 		const URL = "https://wasabi.i3s.unice.fr/api/v1/artist/count/album?limit=2"
 		const headers = new Headers()
 		const requestInfos = { method: 'GET',
@@ -120,13 +119,13 @@ class MainPage extends React.Component {
 		let response = await fetch(URL, requestInfos).then(res => {this.debug(debug, 'fetchArtistWithTheMostAlbums', res) ; return res })
 		let body = await response.json().then(res => {this.debug(debug, 'fetchArtistWithTheMostAlbums', res) ; return res })
 		
-		this.setState({mostAlbumsIsLoaded:true, memberWithTheMostAlbums:body[0]})
+		this.setState({mostAlbumsIsLoaded:true, memberWithTheMostAlbums:body})
 	}
 	/**
 	 * Rappelle la derniere opération réalisée quand on change des parametres
 	 */
 	callLastOperation(){
-		const debug = false
+		const debug=false
 		this.setState({listIsLoaded:false})
 		this.debug(debug, 'callLastOperation', this.state.lastOperation)
 		if(this.state.lastOperation===this.fetchArtists) this.fetchArtists()
@@ -137,14 +136,14 @@ class MainPage extends React.Component {
 	 * Appelle le fetch par defaut 
 	 */
 	componentDidMount() {
-		const debug=true
+		const debug=false
 		this.getAll()
 		this.debug(debug, "componentWillMount", this.state)
 		
 	}
 
 	render() {
-		const debug = false
+		const debug=false
 		this.debug(debug, 'render :' , this.state)
 		
 		return (
@@ -168,18 +167,42 @@ class MainPage extends React.Component {
 	}
 
 	displayGraphs(){
-		const debug = true
-		
-		const labels1 = this.state.popularities.map((genre) => genre._id)
-		const values1 = this.state.popularities.map((genre) => genre.sum)
-		const graph1 = this.createGraphLine(labels1, values1, 'genres populaires')
+		let graphPopularity = ''
+		let graphMostAlbums = ''
+		let graphMostBand = ''
+		const debug=false
+		if(!(this.state.popularityIsLoaded || this.state.mostAlbumsIsLoaded || this.state.dataIsLoaded)) return <label>Loading...</label>
+		if(this.state.popularityIsLoaded){
+			const labels1 = []
+			this.state.popularities.forEach((genre) => labels1.push(genre._id))
+			const values1 = []
+			this.state.popularities.forEach((genre) => values1.push(genre.sum))
 
-		this.debug(debug, 'displayGraphs :' , { labels1, values1, graph1})
+			this.debug(debug, 'displayGraphs :' , { labels1, values1})
+			graphPopularity = <MyLineGraph label="genres populaires" data={values1} labels={labels1}></MyLineGraph>
+		}
+		if(this.state.mostAlbumsIsLoaded){
+			const labels2 = []
+			this.state.memberWithTheMostAlbums.forEach((artist) => labels2.push(artist.name))
+			const values2 = []
+			this.state.memberWithTheMostAlbums.forEach((artist) => values2.push(artist.sum))
 
+			this.debug(debug, 'displayGraphs :' , { labels2, values2})
+			graphMostAlbums = <MyLineGraph label="Participants au plus d'albums" data={values2} labels={labels2}></MyLineGraph>
+		}
+		if(this.state.dataIsLoaded){
+			const labels3 = []
+			this.state.memberWithTheMostBand.forEach((artist) => labels3.push(artist.membername))
+			const values3 = []
+			this.state.memberWithTheMostBand.forEach((artist) => values3.push(artist.sum))
+			this.debug(debug, 'displayGraphs :' , { labels3, values3})
+			graphMostBand = <MyLineGraph label="Membres du plus de groupes" data={values3} labels={labels3}></MyLineGraph>
+		}
+	return <Container className="MuiContainer-root MuiContainer-maxWidthXs">{graphPopularity}{graphMostAlbums}{graphMostBand}</Container>
 	}
 
 	displayPager(){
-		const debug = false
+		const debug=false
 		const start = this.state.start 
 		return (<div className="pager">
 			<Button className="pagerButton MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={()=>{
@@ -196,7 +219,7 @@ class MainPage extends React.Component {
 		</div>)
 	}
 	displayArtists(){	
-		const debug = false
+		const debug=false
 		const artists = this.state.artists;
 		if(!this.state.listIsLoaded) return <div className="debug">Loading...</div>
 		else if(!artists || artists.length < 1 ) return <div className="noResultFound"> No result found ... </div>
@@ -212,7 +235,7 @@ class MainPage extends React.Component {
 	* Affiche des statistiques en provenance de l'API 
 	*/
 	displayData(){
-		const debug=false
+		const debug=true
 		this.debug(debug, this.state.dataIsLoaded, this.state.memberWithTheMostBand)
 		let card1 = ''
 		let card2 = ''
@@ -221,7 +244,7 @@ class MainPage extends React.Component {
 		if(!this.state.dataIsLoaded) {
 			 card1 = (<label>Loading...</label>) ;
 		}else if(this.state.memberWithTheMostBand && this.state.memberWithTheMostBand.length>0){
-			const result = this.state.memberWithTheMostBand
+			const result = this.state.memberWithTheMostBand[0]
 			const title = result.membername
 			const message1 = result.sum
 			const message2 = 'Participation au plus grand nombre de groupes'
@@ -242,7 +265,7 @@ class MainPage extends React.Component {
 		if(!this.state.mostAlbumsIsLoaded) {
 			card3 = (<label>Loading...</label>) ;
 	   	}else if(this.state.memberWithTheMostAlbums){
-		   const result = this.state.memberWithTheMostAlbums
+		   const result = this.state.memberWithTheMostAlbums[0]
 		   const title = result.name
 		   const message1 = result.sum
 		   const message2 = 'Artiste ayant le plus d\'albums'
