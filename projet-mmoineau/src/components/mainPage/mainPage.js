@@ -19,6 +19,7 @@ class MainPage extends React.Component {
 			popularities: [],
 			mostAlbumsIsLoaded:false, 
 			memberWithTheMostAlbums: [],
+			artistToDisplay: '',
 			lastOperation: ()=>{}
 		}		
 		
@@ -233,7 +234,11 @@ class MainPage extends React.Component {
 		else {
 			let i=0;
 			 items = artists.map(el => {
-			 return <ListItem ref={`ref-${el._id}`} align-items="center" button="true" key={el._id} id={el._id} onClick={this.findAwayToModifyDisplay(el._id)}> {el.name} { (el.genres && el.genres.length>0) ? <div className="sublistitem"> {el.genres.join(", " )}</div> :''} </ListItem>})
+				 const selectedArtist = <div class="selected"> I AM THE SELECTED ARTIST </div>
+			 return <ListItem ref={`ref-${el._id}`} align-items="center" button="true" key={el._id} id={el._id} onClick={ this.findAwayToModifyDisplay(el._id) }> {el.name} 
+			 	{ (el.genres && el.genres.length>0) ? <div className="sublistitem"> {el.genres.join(", " )}
+				{el._id===this.state.artistToDisplay?selectedArtist:''}
+			 </div> :''} </ListItem>})
 			 this.debug(debug, "displayArtists : artists : ", artists)
 			 this.debug(debug, "displayArtists : artists[0] : ", artists[0])
 			 //this.debug(debug, "key : ",artists[0].index )
@@ -247,10 +252,10 @@ class MainPage extends React.Component {
 			)
 		}	
 	}
-	displayDetails(id){
-		const debug=true
-		let element = 
-		this.debug(debug, element)
+	findAwayToModifyDisplay(id){
+		const debug = true
+		this.debug(debug, "findAwayToModifyDisplay",id)
+		this.setState({artistToDisplay:id})
 	}
 	
 	/**
