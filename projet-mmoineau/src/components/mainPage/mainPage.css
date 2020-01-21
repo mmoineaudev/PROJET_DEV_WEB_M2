@@ -37,7 +37,7 @@ body {
   flex-direction: row;
   align-items: left;
   justify-content: center;
-  font-size: calc(7px);
+  font-size: calc(2vmin+7px);
   color: #e4dfda;
 }
 .style4 {
@@ -52,4 +52,8 @@ body {
   justify-content: center;
   font-size: calc(5px + 2vmin);
   color: #e4dfda;
+}
+.sublistitem{
+  background-color: #48a9a6;
+  padding:1vmin;
 }

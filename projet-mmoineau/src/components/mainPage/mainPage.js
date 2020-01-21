@@ -9,7 +9,7 @@ class MainPage extends React.Component {
 	constructor() {
 	  super()
 	  this.state = { 
-			start: 1,
+			start: 0,
 			listIsLoaded : false,
 			dataIsLoaded : false,
 			popularityIsLoaded : false,
@@ -68,7 +68,7 @@ class MainPage extends React.Component {
 	async fetchArtistsByName(){
 		const debug=false
 		this.debug(debug, "fetchArtistsByName : " , this.search.value)
-		const URL = "https://wasabi.i3s.unice.fr/api/v1/artist/name/"+this.search.value
+		const URL = "https://wasabi.i3s.unice.fr/search/fulltext/"+this.search.value
 		const headers = new Headers()
 		const requestInfos = { method: 'GET',
 					headers: headers,
@@ -77,7 +77,7 @@ class MainPage extends React.Component {
 			
 		let response = await fetch(URL, requestInfos).then(res => {this.debug(debug, 'fetchArtistsByName', res) ; return res })
 		let body = await response.json().then(res => {this.debug(debug, 'fetchArtistsByName', res) ; return res })
-		if(body) this.setState({listIsLoaded: true, artists: Array(body)  })
+		if(body) this.setState({listIsLoaded: true, artists: body  })
 		else this.setState({listIsLoaded: true})
 
 	}
@@ -141,7 +141,9 @@ class MainPage extends React.Component {
 		this.debug(debug, "componentWillMount", this.state)
 		
 	}
-
+	//###############################################################################
+	//###############################################################################
+	//###############################################################################
 	render() {
 		const debug=false
 		this.debug(debug, 'render :' , this.state)
@@ -165,6 +167,9 @@ class MainPage extends React.Component {
 	  	</div>
 	  )  
 	}
+	//###############################################################################
+	//###############################################################################
+	//###############################################################################
 
 	displayGraphs(){
 		let graphPopularity = ''
@@ -207,7 +212,7 @@ class MainPage extends React.Component {
 		return (<div className="pager style4">
 			<Button className="pagerButton MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={()=>{
 				this.debug(debug, 'pageDecrement')
-				if(start-200>0) this.setState({start:start-199})
+				if(start-200>0) this.setState({start:start-200})
 				this.callLastOperation()
 			}}>Previous</Button>
 			<label className="pagerButton">{start}</label>
@@ -226,17 +231,26 @@ class MainPage extends React.Component {
 		
 		else if(!artists || artists.length < 1 ) return <div className="noResultFound"> No result found ... </div>
 		else {
-			 items = artists.map(el => { let genre = el.genre&&el.genre.length>0?el.genre[0]: null ;
-			 return <ListItem align-items="center" button="true" key={el._id}> {el.name} {genre} </ListItem>})
-			 this.debug(debug, "displayArtists", artists)
+			let i=0;
+			 items = artists.map(el => {
+			 return <ListItem ref={`ref-${el._id}`} align-items="center" button="true" key={el._id} id={el._id} onClick={this.findAwayToModifyDisplay(el._id)}> {el.name} { (el.genres && el.genres.length>0) ? <div className="sublistitem"> {el.genres.join(", " )}</div> :''} </ListItem>})
+			 this.debug(debug, "displayArtists : artists : ", artists)
+			 this.debug(debug, "displayArtists : artists[0] : ", artists[0])
+			 //this.debug(debug, "key : ",artists[0].index )
+			 
 			 return (
-			<TableContainer className="resultsFound style4" style={{maxHeight: "25em", overflow: 'auto', display:"auto"}}> 
+			<TableContainer className="resultsFound" style={{maxHeight: "25em", overflow: 'auto', display:"auto"}}> 
 				<List>
 					{items}
 				</List>
 			</TableContainer>
 			)
-		}
+		}	
+	}
+	displayDetails(id){
+		const debug=true
+		let element = 
+		this.debug(debug, element)
 	}
 	
 	/**
