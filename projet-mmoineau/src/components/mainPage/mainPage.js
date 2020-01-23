@@ -2,6 +2,7 @@ import React from 'react' ;
 import './mainPage.css';
 import { List, ListItem, Button, TableContainer, Card, CardContent, Typography, Container } from '@material-ui/core';
 import MyLineGraph from '../myLineGraph';
+import Artist from '../artist';
 
   
 
@@ -19,7 +20,7 @@ class MainPage extends React.Component {
 			popularities: [],
 			mostAlbumsIsLoaded:false, 
 			memberWithTheMostAlbums: [],
-			artistToDisplay: '',
+			selected: '',
 			lastOperation: ()=>{}
 		}		
 		
@@ -234,11 +235,7 @@ class MainPage extends React.Component {
 		else {
 			let i=0;
 			 items = artists.map(el => {
-				 const selectedArtist = <div class="selected"> I AM THE SELECTED ARTIST </div>
-			 return <ListItem ref={`ref-${el._id}`} align-items="center" button="true" key={el._id} id={el._id} onClick={ this.findAwayToModifyDisplay(el._id) }> {el.name} 
-			 	{ (el.genres && el.genres.length>0) ? <div className="sublistitem"> {el.genres.join(", " )}
-				{el._id===this.state.artistToDisplay?selectedArtist:''}
-			 </div> :''} </ListItem>})
+			 return <Artists name={el.name} genre={el.genres ?el.genres.join("/"): "pas de donnée"} jsonArtist={el}></Artists> })
 			 this.debug(debug, "displayArtists : artists : ", artists)
 			 this.debug(debug, "displayArtists : artists[0] : ", artists[0])
 			 //this.debug(debug, "key : ",artists[0].index )
@@ -252,10 +249,9 @@ class MainPage extends React.Component {
 			)
 		}	
 	}
-	findAwayToModifyDisplay(id){
-		const debug = true
-		this.debug(debug, "findAwayToModifyDisplay",id)
-		this.setState({artistToDisplay:id})
+	toggleClass(object){
+			this.debug(true, object)
+		 	this.setState({selected: object})
 	}
 	
 	/**
