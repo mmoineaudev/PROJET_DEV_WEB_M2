@@ -235,7 +235,7 @@ class MainPage extends React.Component {
 		else {
 			let i=0;
 			 items = artists.map(el => {
-			 return <Artists name={el.name} genre={el.genres ?el.genres.join("/"): "pas de donnée"} jsonArtist={el}></Artists> })
+			 return <Artist name={el.name} genre={el.genres ?el.genres.join("/"): "pas de donnée"} jsonArtist={el}></Artist> })
 			 this.debug(debug, "displayArtists : artists : ", artists)
 			 this.debug(debug, "displayArtists : artists[0] : ", artists[0])
 			 //this.debug(debug, "key : ",artists[0].index )

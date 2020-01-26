@@ -1,9 +1,10 @@
 import React from 'react';
-import { List, ListItem, Button, TableContainer, Card, CardContent, Typography, Container } from '@material-ui/core';
+import {  ListItem } from '@material-ui/core';
 
 class Artist extends React.Component {
     constructor(props) {
       super(props);
+      console.log('Artist :' , props)
       this.state = {
         name:'Jean',
         genre: '',
@@ -22,10 +23,12 @@ componentDidMount(){
 }
 
 render(){
-    return 
-    <ListItem align-items="center" button="true" key={el._id} id={el._id} onClick={this.toggleClass.bind(this)}> {el.name} 
-        { (el.genres && el.genres.length>0) ? <div className="sublistitem"> {el.genres.join(", " )}
-    </div> :''} </ListItem>
+  const display = <ListItem align-items="center" button="true" key={this.state.jsonArtist._id} id={this.state.jsonArtist._id} onClick={console.log('clic')}> {this.state.jsonArtist.name} 
+  { (this.state.jsonArtist.genres && this.state.jsonArtist.genres.length>0) ? <div className="sublistitem"> {this.state.jsonArtist.genres.join(", " )}
+</div> :''} </ListItem>
+    //console.log(display)
+    return ( display )
+
 }
 
   }
