@@ -41,6 +41,7 @@ render(){
       details = <div className="details"> 
       {this.getLocationInfos()}
       {this.getMembersInfo()}
+      {this.getAlbums()}
     </div>
     }
 
@@ -52,9 +53,15 @@ render(){
   getMembersInfo(){
     return (this.state.jsonArtist.members && this.state.jsonArtist.members.length>0) ?  <div className="sublistitem members"> <label>Membres :</label>{ 
       this.state.jsonArtist.members.map(e => {
-        console.log(' details : ', this.state.jsonArtist.members )
         return <div> {e.name}  {(e.instruments && e.instruments.length>0)? ' ('+ e.instruments.join(', ')+ ')': ''} </div>
       })  } </div> :''
+  }
+  getAlbums(){
+    return ((this.state.jsonArtist.albums && this.state.jsonArtist.albums.length>0)? 
+      <div className="sublistitem albums"> Albums : {this.state.jsonArtist.albums.map(e => {
+        return <div>{e.title}{(e.dateRelease)? ', date de sortie : '+e.dateRelease:''} </div> 
+      })} </div> : ''
+    )
   }
 }
   export default Artist;
