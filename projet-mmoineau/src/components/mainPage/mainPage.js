@@ -183,7 +183,7 @@ class MainPage extends React.Component {
 		return (
 	 	<div>
 			<div maxheight="10em" className="App-header">FRONTEND WASABI</div>
-			<div className="style1">
+			<div className="main style1 sublistitem">
 					 <input type="text" ref={(search) => this.search = search} />
 					<Button padding="3em 3em" id="searchButton" className="MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={() => this.getSearch() } > Search </Button>
 					{this.displayHistory()}
@@ -192,7 +192,7 @@ class MainPage extends React.Component {
 					{this.displayPager()}
 					{this.displayData()}
 			</div>
-			<div>
+			<div className="">
 
 				{this.displayGraphs()}
 
@@ -236,20 +236,20 @@ class MainPage extends React.Component {
 			this.debug(debug, 'displayGraphs :' , { labels3, values3})
 			graphMostBand = <MyLineGraph label="Membres du plus de groupes" data={values3} labels={labels3}></MyLineGraph>
 		}
-	return <Container className="MuiContainer-root MuiContainer-maxWidthXs">{graphPopularity}{graphMostAlbums}{graphMostBand}</Container>
+	return <Container className="MuiContainer-root MuiContainer-maxWidthXl">{graphPopularity}{graphMostAlbums}{graphMostBand}</Container>
 	}
 
 	displayPager(){
 		const debug=false
 		const start = this.state.start 
-		return (<div className="pager style4">
+		return (<div className="pager">
 			<Button className="pagerButton MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={()=>{
 				this.debug(debug, 'pageDecrement')
 				if(start-200>0) this.setState({start:start-200})
 				this.callLastOperation()
 			}}>Previous</Button>
 			<label className="pagerButton">{start}</label>
-			<Button className="pagerButton MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={()=>{
+			<Button className="MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={()=>{
 				this.debug(debug, 'pageIncrement')
 				this.setState({start:start+200})
 				this.callLastOperation()
@@ -321,14 +321,14 @@ class MainPage extends React.Component {
 		   this.debug(debug, 'displayData', {title, message1,message2})
 		   card3 = this.createCard(title, message1, message2)
 	   }
-			return (<Container className="MuiContainer-root MuiContainer-maxWidthLg style2">
-				<div width="100%" className="style4">
+			return (<Container className="MuiContainer-root MuiContainer-maxWidthLg">
+				<div width="100%" className="sublistitem">
 					{card1} 
 					</div>
-				<div width="100%" className="style2">
+				<div width="100%" className="sublistitem">
 					{card2} 
 					</div>
-				<div width="100%" className="style4">
+				<div width="100%" className="sublistitem">
 					{card3}
 					</div>
 			</Container>)

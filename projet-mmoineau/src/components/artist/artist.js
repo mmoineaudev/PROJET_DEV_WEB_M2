@@ -22,10 +22,10 @@ componentDidMount(){
 
 render(){
   const details = this.state.details
-  const display = <div onClick={() => { this.fillDetails() }}><ListItem align-items="center" button="true" key={this.state.jsonArtist._id} id={this.state.jsonArtist._id} > {this.state.jsonArtist.name} 
-  { (this.state.jsonArtist.genres && this.state.jsonArtist.genres.length>0) ? <div className="sublistitem"> {this.state.jsonArtist.genres.join(", " )}
+  const display = <div className="artist sublistitem style4" onClick={() => { this.fillDetails() }}><ListItem align-items="center" button="true" key={this.state.jsonArtist._id} id={this.state.jsonArtist._id} > {this.state.jsonArtist.name} 
+  { (this.state.jsonArtist.genres && this.state.jsonArtist.genres.length>0) ? <div class="sublistitem style1"> {this.state.jsonArtist.genres.join(", " )}
   </div> :''} </ListItem> 
-  {(details!==nodata)?details:''}
+  {(details!==nodata)?details:null}
   </div>
     //console.log(display)
     return ( display )
@@ -38,7 +38,7 @@ render(){
   fillDetails(){
     let details = nodata;
     if(this.state.details===nodata){
-      details = <div className="details"> 
+      details = <div className="sublistitem"> 
       {this.getLocationInfos()}
       {this.getMembersInfo()}
       {this.getAlbums()}
@@ -48,17 +48,17 @@ render(){
     this.setState({details:details})
   }
   getLocationInfos() {
-    return(this.state.jsonArtist.locationInfo && this.state.jsonArtist.locationInfo.length>0) ? <div className="sublistitem locationInfo"> Origine du groupe : {this.state.jsonArtist.locationInfo.join(', ')} </div>: ''
+    return(this.state.jsonArtist.locationInfo && this.state.jsonArtist.locationInfo.length>0) ? <div className=""> Origine du groupe : {this.state.jsonArtist.locationInfo.join(', ')} </div>: ''
   }
   getMembersInfo(){
-    return (this.state.jsonArtist.members && this.state.jsonArtist.members.length>0) ?  <div className="sublistitem members"> <label>Membres :</label>{ 
+    return (this.state.jsonArtist.members && this.state.jsonArtist.members.length>0) ?  <div className=""> <label>Membres :</label>{ 
       this.state.jsonArtist.members.map(e => {
         return <div> {e.name}  {(e.instruments && e.instruments.length>0)? ' ('+ e.instruments.join(', ')+ ')': ''} </div>
       })  } </div> :''
   }
   getAlbums(){
     return ((this.state.jsonArtist.albums && this.state.jsonArtist.albums.length>0)? 
-      <div className="sublistitem albums"> Albums : {this.state.jsonArtist.albums.map(e => {
+      <div className=""> Albums : {this.state.jsonArtist.albums.map(e => {
         return <div>{e.title}{(e.dateRelease)? ', date de sortie : '+e.dateRelease:''} </div> 
       })} </div> : ''
     )
