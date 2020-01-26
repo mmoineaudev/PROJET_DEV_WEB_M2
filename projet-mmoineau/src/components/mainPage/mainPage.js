@@ -3,7 +3,7 @@ import './mainPage.css';
 import { List, Button, TableContainer, Card, CardContent, Typography, Container } from '@material-ui/core';
 import MyLineGraph from '../myLineGraph';
 import Artist from '../artist';
-
+import base from '../../base';
   
 
 class MainPage extends React.Component {
@@ -21,6 +21,7 @@ class MainPage extends React.Component {
 			mostAlbumsIsLoaded:false, 
 			memberWithTheMostAlbums: [],
 			selected: '',
+			history: {},
 			lastOperation: ()=>{}
 		}		
 		
@@ -62,10 +63,24 @@ class MainPage extends React.Component {
 	 */
 	getSearch(){
 		const debug=false
+		const oldHistory = this.state.history;
+		let newHistory = oldHistory
+		const key = "search"+this.count(oldHistory)
+		newHistory[key] = this.search.value
 		this.debug(debug, 'getSearch : ', this.search.value)	
-		this.setState({listIsLoaded:false, artists:[]})
+		this.setState({listIsLoaded:false, artists:[], history:newHistory})
 		this.fetchArtistsByName()
 	}
+	count(obj) {	
+		var c = 0, p;
+		for (p in obj) {
+			if (obj.hasOwnProperty(p)) {
+				c += 1;
+			}
+		}
+		return c;
+	}
+
 	//https://wasabi.i3s.unice.fr/search/member/name/:memberName
 	async fetchArtistsByName(){
 		const debug=false
@@ -134,15 +149,29 @@ class MainPage extends React.Component {
 		else if(this.state.lastOperation===this.fetchArtistsByName) this.fetchArtistsByName()
 		else this.debug(debug, 'no last operation')
 	}
-	/**
-	 * Appelle le fetch par defaut 
-	 */
+	//#############FireBase########################################################
+	componentWillMount(){
+		const debug=true
+		this.ref = base.syncState('history', {
+			context: this,
+			state: 'history'
+		  });
+		this.debug(debug, 'componentWillMount : firebase', this.state.history)
+		
+	}
+
+	componentWillUnmount() {
+		base.removeBinding(this.ref);
+	}
+	//###############################################################################
+	
 	componentDidMount() {
 		const debug=false
 		this.getAll()
 		this.debug(debug, "componentWillMount", this.state)
 		
 	}
+	
 	//###############################################################################
 	//###############################################################################
 	//###############################################################################
@@ -156,6 +185,7 @@ class MainPage extends React.Component {
 			<div className="style1">
 					 <input type="text" ref={(search) => this.search = search} />
 					<Button padding="3em 3em" id="searchButton" className="MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={() => this.getSearch() } > Search </Button>
+					{this.displayHistory()}
 					<Button padding="3em 3em" id="getAllButton" className="MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={() => this.getAll()} > SEARCH ALL SONGS </Button>
 					{this.displayArtists()}
 					{this.displayPager()}
@@ -237,7 +267,7 @@ class MainPage extends React.Component {
 			 return <Artist name={el.name} genre={el.genres ?el.genres.join("/"): "pas de donnée"} jsonArtist={el}></Artist> })
 			 this.debug(debug, "displayArtists : artists : ", artists)
 			 this.debug(debug, "displayArtists : artists[0] : ", artists[0])
-			 //this.debug(debug, "key : ",artists[0].index )
+			 //this.(debug, "key : ",artists[0].index )
 			 
 			 return (
 			<TableContainer className="resultsFound" style={{maxHeight: "25em", overflow: 'auto', display:"auto"}}> 
@@ -247,10 +277,6 @@ class MainPage extends React.Component {
 			</TableContainer>
 			)
 		}	
-	}
-	toggleClass(object){
-			this.debug(true, object)
-		 	this.setState({selected: object})
 	}
 	
 	/**
@@ -323,6 +349,12 @@ class MainPage extends React.Component {
 			</CardContent>
 		</Card>)
 	}
+
+	displayHistory(){
+		const debug=true
+		this.debug(debug,'displayHistory : ', this.state.history)
+	}
+
 	debug(debug, label, message){
 		if(debug){
 			console.log('#DEBUG#', label)
