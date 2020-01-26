@@ -22,10 +22,13 @@ componentDidMount(){
 
 render(){
   const details = this.state.details
-  const display = <div className="artist sublistitem style4" onClick={() => { this.fillDetails() }}><ListItem align-items="center" button="true" key={this.state.jsonArtist._id} id={this.state.jsonArtist._id} > {this.state.jsonArtist.name} 
+  const display = <div className="artist sublistitem style4" onClick={() => { this.fillDetails() }}>
+    <ListItem align-items="center" button="true" key={this.state.jsonArtist._id} id={this.state.jsonArtist._id} > {this.state.jsonArtist.name} 
   { (this.state.jsonArtist.genres && this.state.jsonArtist.genres.length>0) ? <div class="sublistitem style1"> {this.state.jsonArtist.genres.join(", " )}
-  </div> :''} </ListItem> 
-  {(details!==nodata)?details:null}
+  </div> :''} 
+  </ListItem> 
+  {(details!==nodata && 
+    ((this.state.jsonArtist.genres || this.state.jsonArtist.albums)))?details:null}
   </div>
     //console.log(display)
     return ( display )
