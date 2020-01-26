@@ -150,12 +150,13 @@ class MainPage extends React.Component {
 		else this.debug(debug, 'no last operation')
 	}
 	//#############FireBase########################################################
-	componentWillMount(){
+	UNSAFE_componentWillMount(){
 		const debug=true
 		this.ref = base.syncState('history', {
 			context: this,
 			state: 'history'
 		  });
+		  //probleme de cors ?
 		this.debug(debug, 'componentWillMount : firebase', this.state.history)
 		
 	}
