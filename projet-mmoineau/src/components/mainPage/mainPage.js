@@ -156,7 +156,7 @@ class MainPage extends React.Component {
 			context: this,
 			state: 'history'
 		  });
-		  //probleme de cors ?
+		  //probleme de cors ? 
 		this.debug(debug, 'componentWillMount : firebase', this.state.history)
 		
 	}
@@ -165,7 +165,7 @@ class MainPage extends React.Component {
 		base.removeBinding(this.ref);
 	}
 	//###############################################################################
-	
+	 
 	componentDidMount() {
 		const debug=false
 		this.getAll()
