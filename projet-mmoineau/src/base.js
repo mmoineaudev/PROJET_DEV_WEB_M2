@@ -1,5 +1,5 @@
 import Rebase from 're-base';
-
+//pas de changement observé si je laisse les 3 premières lignes comme en TP ou tous les champs
 const base = Rebase.createClass(
     {
             apiKey: "AIzaSyC7jcOmf0POvM7NlughFjD9GX3XbATgrZo",

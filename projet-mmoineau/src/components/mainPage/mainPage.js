@@ -71,6 +71,7 @@ class MainPage extends React.Component {
 		this.setState({listIsLoaded:false, artists:[], history:newHistory})
 		this.fetchArtistsByName()
 	}
+	//Pour palier au fait que firebase ne gere pas les tableaux
 	count(obj) {	
 		var c = 0, p;
 		for (p in obj) {
@@ -111,7 +112,6 @@ class MainPage extends React.Component {
 		let body = await response.json().then(res => {this.debug(debug, 'fetchPopularity', res) ; return res })
 		this.setState({popularityIsLoaded: true, popularities:body  })
 	}
-	//wasabi.i3s.unice.fr/api/v1/artist/member/count/band
 	async fetchMemberWithTheMostBand(){
 		const debug=false
 		const URL = "https://wasabi.i3s.unice.fr/api/v1/artist/member/count/band?limit=10"
@@ -124,7 +124,6 @@ class MainPage extends React.Component {
 		let body = await response.json().then(res => {this.debug(debug, 'fetchMemberWithTheMostBand', res) ; return res })
 		this.setState({dataIsLoaded:true, memberWithTheMostBand:body})
 	}
-	//https://wasabi.i3s.unice.fr/api/v1/artist/count/album
 	async fetchArtistWithTheMostAlbums(){
 		const debug=false
 		const URL = "https://wasabi.i3s.unice.fr/api/v1/artist/count/album?limit=2"
@@ -350,10 +349,13 @@ class MainPage extends React.Component {
 			</CardContent>
 		</Card>)
 	}
-
+	/*
+	Devait permettre de réexécuter des recherches
+	*/
 	displayHistory(){
 		const debug=true
 		this.debug(debug,'displayHistory : ', this.state.history)
+		//n'est pas en cohérence avec la base
 	}
 
 	debug(debug, label, message){
