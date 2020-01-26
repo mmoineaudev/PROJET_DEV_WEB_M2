@@ -1,55 +1,51 @@
-body {
+body .main {
   width: 100%;
+  align-items: center;
 }
-
 .pager {
   width: 100%;
 }
 
-.style1 {
-  background-color: #731dd8;
-  min-height: 10vh;
-  display: flex;
-  flex-direction: column;
+.artist{
   align-items: center;
-  justify-content: center;
-  font-size: calc(10x + 2vmin);
-  color: #e4dfda;
 }
-
-.style2 {
-  width: 100%;
-  margin: 3em;
+.sublistitem {
+  padding:1vmin;
+  margin: 1vmin;
   background-color: #48a9a6;
-  min-height: 8vh;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(8px + 2vmin);
+}
+.locationInfo{
+  
+}
+.albums{
+  
+}
+.pager{
+  
+}
+.noResultFound{
+  
+}
+.pagerButton{
+  
+}
+.details{
+  background-color: #731dd8;
   color: #e4dfda;
 }
-
-.style3 {
+.style1{
+  background-color: #731dd8;
+  color: #e4dfda;
+}
+.style2{
+  background-color: #48a9a6;
+  color: #e4dfda;
+}
+.style3{
   background-color: #d4b483;
-  min-height: 7vh;
-  display: flex;
-  flex-direction: row;
-  align-items: left;
-  justify-content: center;
-  font-size: calc(7px);
   color: #e4dfda;
 }
-.style4 {
+.style4{
   background-color: #c1666b;
-  margin: 1em;
-  width: 80%;
-  min-height: 5vh;
-  min-height: 10vh;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(5px + 2vmin);
   color: #e4dfda;
 }

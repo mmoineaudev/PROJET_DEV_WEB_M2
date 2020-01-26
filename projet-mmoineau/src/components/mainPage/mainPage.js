@@ -1,15 +1,16 @@
 import React from 'react' ; 
 import './mainPage.css';
-import { List, ListItem, Button, TableContainer, Card, CardContent, Typography, Container } from '@material-ui/core';
+import { List, Button, TableContainer, Card, CardContent, Typography, Container } from '@material-ui/core';
 import MyLineGraph from '../myLineGraph';
-
+import Artist from '../artist';
+import base from '../../base';
   
 
 class MainPage extends React.Component {
 	constructor() {
 	  super()
 	  this.state = { 
-			start: 1,
+			start: 0,
 			listIsLoaded : false,
 			dataIsLoaded : false,
 			popularityIsLoaded : false,
@@ -19,6 +20,8 @@ class MainPage extends React.Component {
 			popularities: [],
 			mostAlbumsIsLoaded:false, 
 			memberWithTheMostAlbums: [],
+			selected: '',
+			history: {},
 			lastOperation: ()=>{}
 		}		
 		
@@ -60,15 +63,29 @@ class MainPage extends React.Component {
 	 */
 	getSearch(){
 		const debug=false
+		const oldHistory = this.state.history;
+		let newHistory = oldHistory
+		const key = "search"+this.count(oldHistory)
+		newHistory[key] = this.search.value
 		this.debug(debug, 'getSearch : ', this.search.value)	
-		this.setState({listIsLoaded:false, artists:[]})
+		this.setState({listIsLoaded:false, artists:[], history:newHistory})
 		this.fetchArtistsByName()
 	}
+	count(obj) {	
+		var c = 0, p;
+		for (p in obj) {
+			if (obj.hasOwnProperty(p)) {
+				c += 1;
+			}
+		}
+		return c;
+	}
+
 	//https://wasabi.i3s.unice.fr/search/member/name/:memberName
 	async fetchArtistsByName(){
 		const debug=false
 		this.debug(debug, "fetchArtistsByName : " , this.search.value)
-		const URL = "https://wasabi.i3s.unice.fr/api/v1/artist/name/"+this.search.value
+		const URL = "https://wasabi.i3s.unice.fr/search/fulltext/"+this.search.value
 		const headers = new Headers()
 		const requestInfos = { method: 'GET',
 					headers: headers,
@@ -77,7 +94,7 @@ class MainPage extends React.Component {
 			
 		let response = await fetch(URL, requestInfos).then(res => {this.debug(debug, 'fetchArtistsByName', res) ; return res })
 		let body = await response.json().then(res => {this.debug(debug, 'fetchArtistsByName', res) ; return res })
-		if(body) this.setState({listIsLoaded: true, artists: Array(body)  })
+		if(body) this.setState({listIsLoaded: true, artists: body  })
 		else this.setState({listIsLoaded: true})
 
 	}
@@ -132,16 +149,33 @@ class MainPage extends React.Component {
 		else if(this.state.lastOperation===this.fetchArtistsByName) this.fetchArtistsByName()
 		else this.debug(debug, 'no last operation')
 	}
-	/**
-	 * Appelle le fetch par defaut 
-	 */
+	//#############FireBase########################################################
+	UNSAFE_componentWillMount(){
+		const debug=true
+		this.ref = base.syncState('history', {
+			context: this,
+			state: 'history'
+		  });
+		  //probleme de cors ? 
+		this.debug(debug, 'componentWillMount : firebase', this.state.history)
+		
+	}
+
+	componentWillUnmount() {
+		base.removeBinding(this.ref);
+	}
+	//###############################################################################
+	 
 	componentDidMount() {
 		const debug=false
 		this.getAll()
 		this.debug(debug, "componentWillMount", this.state)
 		
 	}
-
+	
+	//###############################################################################
+	//###############################################################################
+	//###############################################################################
 	render() {
 		const debug=false
 		this.debug(debug, 'render :' , this.state)
@@ -149,15 +183,16 @@ class MainPage extends React.Component {
 		return (
 	 	<div>
 			<div maxheight="10em" className="App-header">FRONTEND WASABI</div>
-			<div className="style1">
+			<div className="main style1 sublistitem">
 					 <input type="text" ref={(search) => this.search = search} />
 					<Button padding="3em 3em" id="searchButton" className="MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={() => this.getSearch() } > Search </Button>
+					{this.displayHistory()}
 					<Button padding="3em 3em" id="getAllButton" className="MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={() => this.getAll()} > SEARCH ALL SONGS </Button>
 					{this.displayArtists()}
 					{this.displayPager()}
 					{this.displayData()}
 			</div>
-			<div>
+			<div className="">
 
 				{this.displayGraphs()}
 
@@ -165,6 +200,9 @@ class MainPage extends React.Component {
 	  	</div>
 	  )  
 	}
+	//###############################################################################
+	//###############################################################################
+	//###############################################################################
 
 	displayGraphs(){
 		let graphPopularity = ''
@@ -198,20 +236,20 @@ class MainPage extends React.Component {
 			this.debug(debug, 'displayGraphs :' , { labels3, values3})
 			graphMostBand = <MyLineGraph label="Membres du plus de groupes" data={values3} labels={labels3}></MyLineGraph>
 		}
-	return <Container className="MuiContainer-root MuiContainer-maxWidthXs">{graphPopularity}{graphMostAlbums}{graphMostBand}</Container>
+	return <Container className="MuiContainer-root MuiContainer-maxWidthXl">{graphPopularity}{graphMostAlbums}{graphMostBand}</Container>
 	}
 
 	displayPager(){
 		const debug=false
 		const start = this.state.start 
-		return (<div className="pager style4">
+		return (<div className="pager">
 			<Button className="pagerButton MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={()=>{
 				this.debug(debug, 'pageDecrement')
-				if(start-200>0) this.setState({start:start-199})
+				if(start-200>0) this.setState({start:start-200})
 				this.callLastOperation()
 			}}>Previous</Button>
 			<label className="pagerButton">{start}</label>
-			<Button className="pagerButton MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={()=>{
+			<Button className="MuiButton-iconSizeSmall MuiButton-outlinedSizeSmall" onClick={()=>{
 				this.debug(debug, 'pageIncrement')
 				this.setState({start:start+200})
 				this.callLastOperation()
@@ -219,24 +257,27 @@ class MainPage extends React.Component {
 		</div>)
 	}
 	displayArtists(){	
-		const debug=true
+		const debug=false
 		const artists = this.state.artists;
 		let items = []
 		if(!this.state.listIsLoaded) return <div>Loading...</div>
 		
 		else if(!artists || artists.length < 1 ) return <div className="noResultFound"> No result found ... </div>
 		else {
-			 items = artists.map(el => { let genre = el.genre&&el.genre.length>0?el.genre[0]: null ;
-			 return <ListItem align-items="center" button="true" key={el._id}> {el.name} {genre} </ListItem>})
-			 this.debug(debug, "displayArtists", artists)
+			 items = artists.map(el => {
+			 return <Artist name={el.name} genre={el.genres ?el.genres.join("/"): "pas de donnée"} jsonArtist={el}></Artist> })
+			 this.debug(debug, "displayArtists : artists : ", artists)
+			 this.debug(debug, "displayArtists : artists[0] : ", artists[0])
+			 //this.(debug, "key : ",artists[0].index )
+			 
 			 return (
-			<TableContainer className="resultsFound style4" style={{maxHeight: "25em", overflow: 'auto', display:"auto"}}> 
+			<TableContainer className="resultsFound" style={{maxHeight: "25em", overflow: 'auto', display:"auto"}}> 
 				<List>
 					{items}
 				</List>
 			</TableContainer>
 			)
-		}
+		}	
 	}
 	
 	/**
@@ -280,14 +321,14 @@ class MainPage extends React.Component {
 		   this.debug(debug, 'displayData', {title, message1,message2})
 		   card3 = this.createCard(title, message1, message2)
 	   }
-			return (<Container className="MuiContainer-root MuiContainer-maxWidthLg style2">
-				<div width="100%" className="style4">
+			return (<Container className="MuiContainer-root MuiContainer-maxWidthLg">
+				<div width="100%" className="sublistitem">
 					{card1} 
 					</div>
-				<div width="100%" className="style2">
+				<div width="100%" className="sublistitem">
 					{card2} 
 					</div>
-				<div width="100%" className="style4">
+				<div width="100%" className="sublistitem">
 					{card3}
 					</div>
 			</Container>)
@@ -309,6 +350,12 @@ class MainPage extends React.Component {
 			</CardContent>
 		</Card>)
 	}
+
+	displayHistory(){
+		const debug=true
+		this.debug(debug,'displayHistory : ', this.state.history)
+	}
+
 	debug(debug, label, message){
 		if(debug){
 			console.log('#DEBUG#', label)
