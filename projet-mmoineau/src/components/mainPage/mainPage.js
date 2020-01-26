@@ -1,6 +1,6 @@
 import React from 'react' ; 
 import './mainPage.css';
-import { List, ListItem, Button, TableContainer, Card, CardContent, Typography, Container } from '@material-ui/core';
+import { List, Button, TableContainer, Card, CardContent, Typography, Container } from '@material-ui/core';
 import MyLineGraph from '../myLineGraph';
 import Artist from '../artist';
 
@@ -226,14 +226,13 @@ class MainPage extends React.Component {
 		</div>)
 	}
 	displayArtists(){	
-		const debug=true
+		const debug=false
 		const artists = this.state.artists;
 		let items = []
 		if(!this.state.listIsLoaded) return <div>Loading...</div>
 		
 		else if(!artists || artists.length < 1 ) return <div className="noResultFound"> No result found ... </div>
 		else {
-			let i=0;
 			 items = artists.map(el => {
 			 return <Artist name={el.name} genre={el.genres ?el.genres.join("/"): "pas de donnée"} jsonArtist={el}></Artist> })
 			 this.debug(debug, "displayArtists : artists : ", artists)
