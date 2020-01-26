@@ -1,6 +1,6 @@
 import React from 'react';
 import {  ListItem } from '@material-ui/core';
-
+const nodata ='Pas de données...'
 class Artist extends React.Component {
     constructor(props) {
       super(props);
@@ -8,7 +8,7 @@ class Artist extends React.Component {
         name:'Jean',
         genre: '',
         jsonArtist: {},
-        details: ''
+        details: nodata
       }
     }
 
@@ -25,7 +25,7 @@ render(){
   const display = <div onClick={() => { this.fillDetails() }}><ListItem align-items="center" button="true" key={this.state.jsonArtist._id} id={this.state.jsonArtist._id} > {this.state.jsonArtist.name} 
   { (this.state.jsonArtist.genres && this.state.jsonArtist.genres.length>0) ? <div className="sublistitem"> {this.state.jsonArtist.genres.join(", " )}
   </div> :''} </ListItem> 
-  {(details) ? details : '' }
+  {(details!==nodata)?details:''}
   </div>
     //console.log(display)
     return ( display )
@@ -36,17 +36,25 @@ render(){
       {(this.state.jsonArtist.albums) ?  .title .genre .dateRelease : ''}
   */
   fillDetails(){
-    let details = '';
-    if(this.state.details===''){
-      details = <div class="details"> 
-      {(this.state.jsonArtist.locationInfo) ? this.state.jsonArtist.locationInfo : ''}
-      {(this.state.jsonArtist.members && this.state.jsonArtist.members.length>0) ? 
-        this.state.jsonArtist.members.map(e => {
-          return e.name + (e.instruments && e.instruments.length>0)? ' '+ e.instruments.join(', ') : ''
-        }) : ''}
+    let details = nodata;
+    if(this.state.details===nodata){
+      details = <div className="details"> 
+      {this.getLocationInfos()}
+      {this.getMembersInfo()}
     </div>
     }
+
     this.setState({details:details})
   }
+  getLocationInfos() {
+    return(this.state.jsonArtist.locationInfo && this.state.jsonArtist.locationInfo.length>0) ? <div className="sublistitem locationInfo"> Origine du groupe : {this.state.jsonArtist.locationInfo.join(', ')} </div>: ''
   }
+  getMembersInfo(){
+    return (this.state.jsonArtist.members && this.state.jsonArtist.members.length>0) ?  <div className="sublistitem members"> <label>Membres :</label>{ 
+      this.state.jsonArtist.members.map(e => {
+        console.log(' details : ', this.state.jsonArtist.members )
+        return <div> {e.name}  {(e.instruments && e.instruments.length>0)? ' ('+ e.instruments.join(', ')+ ')': ''} </div>
+      })  } </div> :''
+  }
+}
   export default Artist;
